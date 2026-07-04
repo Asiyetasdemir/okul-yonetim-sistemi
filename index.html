@@ -1,0 +1,2388 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduMercek | Okul ve Etüt Yönetim Sistemi</title>
+    <!-- Google Fonts Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="dark-theme">
+    <div id="app" class="dashboard-wrapper">
+      
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--color-border); box-sizing: border-box;">
+          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; padding-bottom: 4px;">
+            <img id="app-logo" src="/src/assets/logo-dark-icon.jpg" alt="EduMercek Icon" style="height: 24px; width: 24px; object-fit: contain; flex-shrink: 0; border: none;">
+            <img id="app-logo-text" src="/src/assets/logo-dark.jpg" alt="EduMercek Logo Text" style="height: 16px; width: auto; object-fit: contain; flex-shrink: 0;">
+          </div>
+          <!-- User Profile Label -->
+          <div style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin-top: 2px; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; border-left: 3px solid var(--color-students); padding-left: 8px; line-height: 1.1; width: 100%; box-sizing: border-box;">Mert Yardımcı</div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" data-view="dashboard">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Ana Sayfa</span>
+          </button>
+          
+          <div class="nav-separator">ÖĞRENCİ & EĞİTİM</div>
+          <button class="nav-btn" data-view="students">
+            <i data-lucide="users"></i>
+            <span>Öğrenci İşleri</span>
+          </button>
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-pre-reg')">
+            <i data-lucide="user-plus"></i>
+            <span>Ön Kayıt</span>
+          </button>
+          <button class="nav-btn" data-view="attendance">
+            <i data-lucide="clipboard-check"></i>
+            <span>Yoklama İşlemleri</span>
+          </button>
+          <button class="nav-btn" data-view="homework">
+            <i data-lucide="book-open"></i>
+            <span>Ödev Takip</span>
+          </button>
+          <button class="nav-btn" data-view="studies">
+            <i data-lucide="calendar"></i>
+            <span>Birebir Etüt</span>
+          </button>
+
+          <div class="nav-separator">MUHASEBE & PERSONEL</div>
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-accounting')">
+            <i data-lucide="wallet"></i>
+            <span>Öğrenci Cari / Kasa</span>
+          </button>
+          <button class="nav-btn" data-view="staff">
+            <i data-lucide="briefcase"></i>
+            <span>Personel İşleri</span>
+          </button>
+
+          <div class="nav-separator">AYARLAR & TANIMLAR</div>
+          <button class="nav-btn" data-view="counseling">
+            <i data-lucide="heart-handshake"></i>
+            <span>Rehberlik Servisi</span>
+          </button>
+          <button class="nav-btn" data-view="hours">
+            <i data-lucide="clock"></i>
+            <span>Ders Saatleri</span>
+          </button>
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-bell-schedule')">
+            <i data-lucide="bell-ring"></i>
+            <span>Zil Programı</span>
+          </button>
+
+          <div class="nav-separator">İLETİŞİM & ANALİZ</div>
+          <button class="nav-btn" data-view="announcements">
+            <i data-lucide="megaphone"></i>
+            <span>Genel Duyurular</span>
+          </button>
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-quick-sms')">
+            <i data-lucide="send"></i>
+            <span>Hızlı SMS Gönder</span>
+          </button>
+          <button class="nav-btn" data-view="stats">
+            <i data-lucide="bar-chart-3"></i>
+            <span>Genel İstatistik</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <div class="avatar">SB</div>
+            <div class="user-info">
+              <h4>Seda Bulut</h4>
+              <span>Yönetici (Öğrenci İşleri)</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- TOP HEADER -->
+        <header class="top-header">
+          <div class="header-left">
+            <button class="menu-toggle-btn" id="menu-toggle">
+              <i data-lucide="menu"></i>
+            </button>
+            <div class="breadcrumb">
+              <span id="breadcrumb-parent">Dashboard</span>
+              <i data-lucide="chevron-right" class="breadcrumb-sep"></i>
+              <span id="breadcrumb-current" class="active">Ana Sayfa</span>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <div class="search-box">
+              <i data-lucide="search"></i>
+              <input type="text" id="global-search" placeholder="Öğrenci, öğretmen veya duyuru ara...">
+            </div>
+            
+            <button class="theme-toggle-btn" id="theme-toggle" title="Temayı Değiştir">
+              <i data-lucide="sun" class="sun-icon"></i>
+              <i data-lucide="moon" class="moon-icon"></i>
+            </button>
+            
+            <div class="date-badge">
+              <i data-lucide="calendar-days"></i>
+              <span id="header-date">27 Haziran 2026</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- CONTAINER FOR DYNAMIC VIEWS -->
+        <div class="content-container">
+          <section id="view-dashboard" class="tab-view active" style="position: relative; min-height: calc(100vh - 160px); padding-bottom: 80px; box-sizing: border-box;">
+
+
+            <!-- THE 12 BOX GRID -->
+            <div class="dashboard-grid-12">
+              <!-- Tile 1: Öğrenci İşleri (Green) -->
+              <div class="tile-card tile-green" onclick="window.switchTab('students')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="contact-2"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Öğrenci İşleri</h3>
+                  <span>Kayıt ve kart yönetimi</span>
+                </div>
+              </div>
+
+              <!-- Tile 2: Ön Kayıt İşleri (Orange) -->
+              <div class="tile-card tile-orange" onclick="window.openLegacyModal('modal-pre-reg')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="user-plus-2"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Ön Kayıt İşleri</h3>
+                  <span>Aday öğrenci başvuru</span>
+                </div>
+              </div>
+
+              <!-- Tile 3: Muhasebe İşleri (Purple) -->
+              <div class="tile-card tile-purple" onclick="window.openLegacyModal('modal-accounting')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="calculator"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Muhasebe İşleri</h3>
+                  <span>Taksit ve sözleşmeler</span>
+                </div>
+              </div>
+
+              <!-- Tile 4: Öğrenci Yoklama İşleri (Dark Grey) -->
+              <div class="tile-card tile-darkgrey" onclick="window.switchTab('attendance')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="graduation-cap"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Öğrenci Yoklama</h3>
+                  <span>Günlük katılım kontrolü</span>
+                </div>
+              </div>
+
+              <!-- Tile 5: Ödev Kontrol İşleri (Light Blue) -->
+              <div class="tile-card tile-lightblue" onclick="window.switchTab('homework')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="check-square"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Ödev Kontrol</h3>
+                  <span>Soru ve ödev takipleri</span>
+                </div>
+              </div>
+
+              <!-- Tile 6: Zil Programı (Dark Red) -->
+              <div class="tile-card tile-darkred" onclick="window.openLegacyModal('modal-bell-schedule')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="bell"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Zil Programı</h3>
+                  <span>Ders saat tanımları</span>
+                </div>
+              </div>
+
+              <!-- Tile 7: Online Sonuç İşleri (Coral) -->
+              <div class="tile-card tile-coral" onclick="window.openLegacyModal('modal-online-results')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="globe"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Online Sonuç</h3>
+                  <span>Öğrenci karneleri</span>
+                </div>
+              </div>
+
+              <!-- Tile 8: Ölçme Değerlendirme (Hot Pink) -->
+              <div class="tile-card tile-hotpink" onclick="window.switchTab('stats')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="bar-chart-4"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Ölçme Değerlendirme</h3>
+                  <span>Konu analiz ve istatistik</span>
+                </div>
+              </div>
+
+              <!-- Tile 9: E-Fatura İşleri (Slate Grey) -->
+              <div class="tile-card tile-slategrey" onclick="window.openLegacyModal('modal-e-invoice')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="file-text"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>E-Fatura İşleri</h3>
+                  <span>Resmi fatura dökümü</span>
+                </div>
+              </div>
+
+              <!-- Tile 10: Rehberlik Servisi (Dark Blue) -->
+              <div class="tile-card tile-darkblue" onclick="window.switchTab('counseling')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="heart-handshake"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Rehberlik Servisi</h3>
+                  <span>Bireysel öğrenci takibi</span>
+                </div>
+              </div>
+
+              <!-- Tile 11: Birebir Etüt İşleri (Red) -->
+              <div class="tile-card tile-red" onclick="window.switchTab('studies')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="book-open-check"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>Birebir Etüt</h3>
+                  <span>Özel etüt randevuları</span>
+                </div>
+              </div>
+
+              <!-- Tile 12: SMS Gönderim İşleri (Yellow) -->
+              <div class="tile-card tile-yellow" onclick="window.openLegacyModal('modal-quick-sms')">
+                <div class="tile-icon-wrapper">
+                  <i data-lucide="mail"></i>
+                </div>
+                <div class="tile-info">
+                  <h3>SMS Gönderim</h3>
+                  <span>Toplu veli bilgilendirme</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- DASHBOARD STATUS BAR -->
+            <div class="dashboard-status-bar">
+              <div class="status-left">
+                <!-- Drop-up 1: Genel Tanımlamalar -->
+                <div class="dropup-container">
+                  <button class="status-btn" id="btn-status-genel">
+                    <i data-lucide="wrench" style="width: 14px; height: 14px;"></i>
+                    Genel Tanımlamalar
+                  </button>
+                  <div class="dropup-menu" id="menu-status-genel">
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-bell-schedule')">Zamanlayıcı Tanımları</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-bell-schedule')">Ders Saat Tanımları</a>
+                    <a href="javascript:void(0)" onclick="window.showToast('Özelkod Tanımları modülü açıldı.')">Özelkod Tanımları</a>
+                    <a href="javascript:void(0)" onclick="window.showToast('Ders Tanımları modülü açıldı.')">Ders Tanımları</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-categories-grid')">Sınıf Tanımları</a>
+                  </div>
+                </div>
+
+                <!-- Drop-up 2: Sistem Ayarları -->
+                <div class="dropup-container">
+                  <button class="status-btn" id="btn-status-sistem">
+                    <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
+                    Sistem Ayarları
+                  </button>
+                  <div class="dropup-menu" id="menu-status-sistem">
+                    <a href="javascript:void(0)" onclick="window.showToast('Dönem - Devir İşlemleri açıldı.')">Dönem - Devir İşlemleri</a>
+                    <a href="javascript:void(0)" onclick="window.showToast('Sistem Ayarları açıldı.')">Sistem Ayarları</a>
+                    <a href="javascript:void(0)" onclick="window.showToast('Kurum Tanımı açıldı.')">Kurum Tanımı</a>
+                    <a href="javascript:void(0)" onclick="window.showToast('Sms İzinleri açıldı.')">Sms İzinleri</a>
+                    <a href="javascript:void(0)" onclick="window.showToast('Personel Sınıf / Ders Yetkileri düzenleme açıldı.')">Personel Yetkileri</a>
+                    <a href="javascript:void(0)" onclick="window.switchTab('staff')">Personel Tanımları</a>
+                  </div>
+                </div>
+
+                <!-- Drop-up 3: Duyuru Yayınla -->
+                <div class="dropup-container">
+                  <button class="status-btn" id="btn-status-duyuru">
+                    <i data-lucide="megaphone" style="width: 14px; height: 14px;"></i>
+                    Duyuru Yayınla
+                  </button>
+                  <div class="dropup-menu" id="menu-status-duyuru">
+                    <a href="javascript:void(0)" onclick="window.switchTab('announcements')">Öğrenciye Duyuru</a>
+                    <a href="javascript:void(0)" onclick="window.switchTab('announcements')">Personele Duyuru</a>
+                  </div>
+                </div>
+
+                <button class="status-btn" onclick="window.openLegacyModal('modal-period-change')">
+                  <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+                  Dönem Değiştir
+                </button>
+
+                <button class="status-btn" onclick="window.openLegacyModal('modal-reminder')">
+                  <i data-lucide="hourglass" style="width: 14px; height: 14px;"></i>
+                  Hatırlatıcı
+                </button>
+
+                <button class="status-btn" onclick="window.showToast('Canlı destek talebi oluşturuluyor...')">
+                  <i data-lucide="message-square" style="width: 14px; height: 14px;"></i>
+                  Canlı Destek
+                </button>
+
+                <a href="tel:08503055105" class="status-btn" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
+                  <i data-lucide="phone" style="width: 14px; height: 14px;"></i>
+                  0850 305 5105
+                </a>
+
+                <div class="status-sms-credit">
+                  <i data-lucide="message-circle" style="width: 12px; height: 12px; color: var(--color-counseling); vertical-align: middle; margin-right: 2px;"></i>
+                  Sms Krediniz: <span>85386</span>
+                </div>
+              </div>
+
+              <div class="status-right" id="status-live-clock">
+                04.07.2026 16:51:56
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. ÖĞRENCİ İŞLERİ VIEW -->
+          <section id="view-students" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Öğrenci İşleri Modülü</h2>
+                <p>Öğrenci karnesini (Finans, Davranış Puanı, Sınav Sonuçları) görüntülemek için isme tıklayın.</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" id="btn-show-classes-grid">
+                  <i data-lucide="layers"></i> Sınıf & Gruplar
+                </button>
+                <button class="btn btn-secondary" id="btn-create-category-inline">
+                  <i data-lucide="folder-plus"></i> Kategori Oluştur
+                </button>
+                <button class="btn btn-primary" id="btn-add-student">
+                  <i data-lucide="user-plus"></i> Yeni Öğrenci Ekle
+                </button>
+              </div>
+            </div>
+
+            <div class="table-card glass-panel">
+            <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 1px solid var(--color-border); padding-bottom: 16px;">
+              <button class="btn btn-secondary" id="btn-student-class-list" style="font-size: 12px; padding: 8px 12px;">
+                <i data-lucide="printer" style="width: 14px; height: 14px;"></i> Sınıf Listesi Al
+              </button>
+              <button class="btn btn-secondary" id="btn-student-settings" style="font-size: 12px; padding: 8px 12px;">
+                <i data-lucide="settings" style="width: 14px; height: 14px;"></i> Kayıt Ayarları
+              </button>
+              <button class="btn btn-secondary" onclick="window.importFromExcel()" style="font-size: 12px; padding: 8px 12px;">
+                <i data-lucide="file-spreadsheet" style="width: 14px; height: 14px;"></i> Excel'den Aktar
+              </button>
+              <button class="btn btn-secondary" onclick="window.exportToExcel()" style="font-size: 12px; padding: 8px 12px;">
+                <i data-lucide="download" style="width: 14px; height: 14px;"></i> Excel'e Aktar
+              </button>
+            </div>
+
+            <div class="class-filter-row" style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px;">
+              <div class="dropdown-multiselect" id="class-dropdown-container" style="position: relative; width: 220px;">
+                <button type="button" class="btn btn-secondary" id="btn-class-dropdown-trigger" style="width: 100%; justify-content: space-between; display: flex; align-items: center; padding: 10px 14px; font-size: 13px;">
+                  <span id="class-dropdown-label" style="display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="layout-grid" style="width: 16px; height: 16px;"></i>
+                    Sınıflar
+                  </span>
+                  <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
+                </button>
+                
+                <div class="dropdown-menu-panel glass-panel" id="class-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; width: 300px; z-index: 10; padding: 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-glass); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+                    <button type="button" class="btn-link" id="btn-select-all-classes" style="font-size: 11px; font-weight: 700; color: var(--color-students); background: none; border: none; cursor: pointer; padding: 0;">Tümünü Seç</button>
+                    <button type="button" class="btn-link" id="btn-clear-classes" style="font-size: 11px; font-weight: 700; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 0;">Temizle</button>
+                  </div>
+                  <div id="class-checkbox-grid" class="class-select-box" style="height: 180px;">
+                    <!-- Sınıf checkboxları JS ile doldurulur -->
+                  </div>
+                </div>
+              </div>
+              
+              <button type="button" class="btn btn-primary" id="btn-list-students" style="background: linear-gradient(135deg, var(--color-students), var(--color-studies)); padding: 10px 18px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; border-radius: var(--radius-md);">
+                <i data-lucide="list" style="width: 14px; height: 14px;"></i> Listele
+              </button>
+            </div>
+
+
+              <div class="table-controls">
+                <div class="search-input" style="max-width: 100%;">
+                  <i data-lucide="search"></i>
+                  <input type="text" id="student-search-input" placeholder="Öğrenci adı veya veli adı ile ara...">
+                </div>
+              </div>
+              
+              <div class="responsive-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="sortable-header" data-sort-col="id" style="cursor: pointer;">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                          <span>Numara</span>
+                          <i data-lucide="chevrons-up-down" class="sort-icon" style="width: 14px; height: 14px; opacity: 0.7;"></i>
+                        </div>
+                      </th>
+                      <th class="sortable-header" data-sort-col="name" style="cursor: pointer;">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                          <span>Öğrenci (Detay için Tıklayın)</span>
+                          <i data-lucide="chevrons-up-down" class="sort-icon" style="width: 14px; height: 14px; opacity: 0.7;"></i>
+                        </div>
+                      </th>
+                      <th class="sortable-header" data-sort-col="phone" style="cursor: pointer;">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                          <span>Öğrenci Tel</span>
+                          <i data-lucide="chevrons-up-down" class="sort-icon" style="width: 14px; height: 14px; opacity: 0.7;"></i>
+                        </div>
+                      </th>
+                      <th class="sortable-header" data-sort-col="tcNo" style="cursor: pointer;">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                          <span>Öğrenci TC</span>
+                          <i data-lucide="chevrons-up-down" class="sort-icon" style="width: 14px; height: 14px; opacity: 0.7;"></i>
+                        </div>
+                      </th>
+                      <th style="position: relative; cursor: pointer;" id="header-class-filter-th">
+                        <div style="display: inline-flex; align-items: center; gap: 6px;" id="btn-header-class-trigger">
+                          <span>Sınıf</span>
+                          <i data-lucide="chevron-down" style="width: 12px; height: 12px;"></i>
+                        </div>
+                        <div class="dropdown-menu-panel glass-panel" id="header-class-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; width: 220px; z-index: 100; padding: 12px; border-radius: var(--radius-md); box-shadow: var(--shadow-glass); border: 1px solid var(--color-border); background: var(--bg-sidebar); text-align: left; font-weight: normal;">
+                          <div style="display: flex; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px;">
+                            <button type="button" class="btn btn-secondary" id="btn-sort-class-asc" style="flex: 1; font-size: 11px; padding: 6px 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600; cursor: pointer; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--bg-main); color: var(--text-main);">
+                              <i data-lucide="arrow-up-1-9" style="width: 12px; height: 12px;"></i> A-Z Sırala
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-sort-class-desc" style="flex: 1; font-size: 11px; padding: 6px 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600; cursor: pointer; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--bg-main); color: var(--text-main);">
+                              <i data-lucide="arrow-down-9-1" style="width: 12px; height: 12px;"></i> Z-A Sırala
+                            </button>
+                          </div>
+                          <div style="margin-bottom: 8px; position: relative; display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 4px 8px; width: 100%; box-sizing: border-box;">
+                            <i data-lucide="search" style="width: 12px; height: 12px; color: var(--text-muted); margin-right: 6px;"></i>
+                            <input type="text" id="header-class-search-input" placeholder="Sınıf ara..." style="background: transparent; border: none; font-size: 11px; color: var(--text-main); outline: none; width: 100%;">
+                          </div>
+                          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 6px;">
+                            <button type="button" class="btn-link" id="btn-header-select-all-classes" style="font-size: 10px; font-weight: 700; color: var(--color-students); background: none; border: none; cursor: pointer; padding: 0;">Tümü</button>
+                            <button type="button" class="btn-link" id="btn-header-clear-classes" style="font-size: 10px; font-weight: 700; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 0;">Temizle</button>
+                          </div>
+                          <div id="header-class-checkbox-grid" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                            <!-- Populated dynamically -->
+                          </div>
+                        </div>
+                      </th>
+                      <th>Branş/Kategori</th>
+                      <th class="sortable-header" data-sort-col="parentName" style="cursor: pointer;">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                          <span>Veli Adı Soyadı</span>
+                          <i data-lucide="chevrons-up-down" class="sort-icon" style="width: 14px; height: 14px; opacity: 0.7;"></i>
+                        </div>
+                      </th>
+                      <th class="sortable-header" data-sort-col="parentPhone" style="cursor: pointer;">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                          <span>Veli Tel</span>
+                          <i data-lucide="chevrons-up-down" class="sort-icon" style="width: 14px; height: 14px; opacity: 0.7;"></i>
+                        </div>
+                      </th>
+                      <th class="sortable-header" data-sort-col="parentTc" style="cursor: pointer;">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                          <span>Veli TC</span>
+                          <i data-lucide="chevrons-up-down" class="sort-icon" style="width: 14px; height: 14px; opacity: 0.7;"></i>
+                        </div>
+                      </th>
+                      <th style="position: relative; cursor: pointer;" id="header-status-filter-th">
+                        <div style="display: inline-flex; align-items: center; gap: 6px;" id="btn-header-status-trigger">
+                          <span>Durum</span>
+                          <i data-lucide="chevron-down" style="width: 12px; height: 12px;"></i>
+                        </div>
+                        <div class="dropdown-menu-panel glass-panel" id="header-status-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; width: 140px; z-index: 100; padding: 10px; border-radius: var(--radius-md); box-shadow: var(--shadow-glass); border: 1px solid var(--color-border); background: var(--bg-sidebar); text-align: left; font-weight: normal;">
+                          <div style="display: flex; flex-direction: column; gap: 6px;" id="status-filter-options">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-main); font-size: 12px;">
+                              <input type="radio" name="status-filter" value="All" checked>
+                              <span>Tümü</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-main); font-size: 12px;">
+                              <input type="radio" name="status-filter" value="Aktif">
+                              <span>Aktif</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-main); font-size: 12px;">
+                              <input type="radio" name="status-filter" value="Pasif">
+                              <span>Pasif</span>
+                            </label>
+                          </div>
+                        </div>
+                      </th>
+                      <th>Aksiyon</th>
+                    </tr>
+                  </thead>
+                  <tbody id="students-table-body">
+                    <!-- Dynamic Rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. YOKLAMA VIEW -->
+          <section id="view-attendance" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Öğrenci Yoklama Sistemi</h2>
+                <p>Öğrencilerin günlük ve ders bazlı yoklama girişlerini filtreleyin, sorgulayın ve yönetin.</p>
+              </div>
+            </div>
+
+            <div class="split-layout" style="display: flex; gap: 20px; align-items: flex-start; max-width: 100%;">
+              <!-- Left Sidebar: Filters -->
+              <div class="sidebar-panel glass-panel" style="width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; box-sizing: border-box;">
+                <div>
+                  <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Tarih Arası Yoklama Getir</h4>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 10px; color: var(--text-muted);">Başlangıç Tarihi</label>
+                    <input type="date" id="att-filter-start" value="2026-07-03" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <label style="font-size: 10px; color: var(--text-muted);">Bitiş Tarihi</label>
+                    <input type="date" id="att-filter-end" value="2026-07-03" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                  </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                  <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Sınıf ve Tarih Bazında</h4>
+                  <select id="att-filter-class" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; margin-bottom: 8px;">
+                    <option value="all">Tüm Sınıflar</option>
+                    <option value="27 YAZ 11A">27 YAZ 11A</option>
+                    <option value="27 YAZ 11B">27 YAZ 11B</option>
+                    <option value="27 YAZ 11C">27 YAZ 11C</option>
+                  </select>
+                  <button class="btn btn-secondary btn-block" onclick="window.filterAttendanceByClass()" style="font-size: 11px; padding: 8px; width: 100%;">Sınıfa Göre Getir</button>
+                </div>
+
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                  <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Özel Kodlara Göre</h4>
+                  <select id="att-filter-code" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; margin-bottom: 8px;">
+                    <option value="all">Seçim Yapınız</option>
+                    <option value="KURS">KURS GENEL</option>
+                  </select>
+                  <button class="btn btn-secondary btn-block" onclick="window.filterAttendanceByCode()" style="font-size: 11px; padding: 8px; width: 100%;">Kodlara Göre Getir</button>
+                </div>
+
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px; margin-top: auto;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-main); cursor: pointer; margin-bottom: 8px;">
+                    <input type="checkbox" id="att-select-all-sidebar" onchange="window.toggleAllAttendanceCheckboxes(this)" style="accent-color: var(--color-students);"> Toplu Seçim
+                  </label>
+                  <button class="btn btn-danger btn-block" onclick="window.deleteSelectedAttendance()" style="font-size: 11px; padding: 8px; background: #dc2626; border: none; color: #fff; width: 100%;">
+                    Sil
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Area: Actions & Grid Table -->
+              <div class="content-panel glass-panel" style="flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="window.attendanceReport('detailed')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="bar-chart-3" style="width:12px; height:12px; color: #10b981;"></i> Detaylı Yoklama Raporu</button>
+                    <button class="btn btn-secondary" onclick="window.attendanceReport('staff')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="user-check" style="width:12px; height:12px; color: #3b82f6;"></i> Detaylı Personel Raporu</button>
+                    <button class="btn btn-secondary" onclick="window.refreshAttendanceTable()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="refresh-cw" style="width:12px; height:12px;"></i> Sayfayı Yenile</button>
+                  </div>
+                  <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="window.attendanceReport('sms')" style="font-size: 11px; padding: 6px 12px; color: var(--color-students); display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="mail" style="width:12px; height:12px;"></i> Manuel SMS</button>
+                    <button class="btn btn-secondary" onclick="window.exportAttendanceToExcel()" style="font-size: 11px; padding: 6px 12px; color: #10b981; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-spreadsheet" style="width:12px; height:12px;"></i> Excel'e Aktar</button>
+                    <button class="btn btn-primary" onclick="window.openEditSelectedAttendance()" style="font-size: 11px; padding: 6px 12px; background: #10b981; border: none; color:#fff;">Seçilenleri Düzenle</button>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; flex-wrap: wrap; gap: 8px;">
+                  <div style="display:flex; gap:12px;">
+                    <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#dc2626; border-radius:3px; display:inline-block;"></span> Yok Yazılanlar</span>
+                    <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#eab308; border-radius:3px; display:inline-block;"></span> Geç Gelenler</span>
+                  </div>
+                  <div class="search-input" style="width: 200px; margin-bottom: 0;">
+                    <i data-lucide="search" style="width:14px; height:14px;"></i>
+                    <input type="text" id="attendance-log-search" oninput="window.searchAttendanceLog()" placeholder="Arama yapabilirsiniz..." style="font-size:12px; padding: 6px 10px 6px 30px; box-sizing: border-box;">
+                  </div>
+                </div>
+
+                <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; background: var(--bg-main);">
+                    <thead>
+                      <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Öğrenci</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Personel</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Ders</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Sınıflar</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center;">Durumu</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Tarih / Saat</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Veli 1 GSM</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Ders Saati</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center; width: 40px;">Seç</th>
+                      </tr>
+                    </thead>
+                    <tbody id="attendance-log-table-body">
+                      <!-- Dynamic rows from script -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. GENEL DUYURU VIEW -->
+          <section id="view-announcements" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Genel Duyuru Panosu</h2>
+                <p>Kurum içi veli, öğrenci ve personele yönelik duyuruları yönetin.</p>
+              </div>
+            </div>
+
+            <div class="announcement-grid-layout">
+              <!-- Left Side: New Announcement Form -->
+              <div class="announcement-form-container glass-panel">
+                <h3><i data-lucide="pen-tool"></i> Yeni Duyuru Yayınla</h3>
+                <form id="announcement-form">
+                  <div class="form-group">
+                    <label for="ann-title">Duyuru Başlığı</label>
+                    <input type="text" id="ann-title" placeholder="Başlık giriniz..." required>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="ann-author">Yayınlayan Yetkili</label>
+                      <input type="text" id="ann-author" value="Seda Bulut" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="ann-target">Hedef Kitle</label>
+                      <select id="ann-target">
+                        <option value="all">Herkes (Genel)</option>
+                        <option value="students">Yalnızca Öğrenciler</option>
+                        <option value="parents">Yalnızca Veliler</option>
+                        <option value="staff">Yalnızca Personel</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="ann-content">Duyuru İçeriği</label>
+                    <textarea id="ann-content" rows="6" placeholder="Duyuru metnini buraya yazın..." required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block">
+                    <i data-lucide="send"></i> Duyuruyu Panoya Ekle
+                  </button>
+                </form>
+              </div>
+
+              <!-- Right Side: Announcements Feed -->
+              <div class="announcements-feed-container">
+                <h3><i data-lucide="megaphone"></i> Mevcut Duyurular</h3>
+                <div class="feed-list" id="announcements-feed">
+                  <!-- Dynamic Feed Cards -->
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="view-studies" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Birebir Etüt Planlama & Ayarları</h2>
+                <p>Öğretmenlerin uygun saatlerine göre öğrencilere birebir etütler tasarlayın ve atayın.</p>
+              </div>
+            </div>
+
+            <!-- Birebir Etüt Actions Top Toolbar -->
+            <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; background: var(--bg-sidebar); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); justify-content: flex-start; align-items: center;">
+              <button class="btn btn-secondary" onclick="showToast('Seçilen Etütler Silinecek')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="trash-2" style="width:12px; height:12px; color:#ef4444;"></i> Programı Sil</button>
+              <button class="btn btn-secondary" onclick="showToast('Yeni Program Şablonu Hazırlandı')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="clipboard-list" style="width:12px; height:12px; color:#10b981;"></i> Program Hazırla</button>
+              <button class="btn btn-secondary" onclick="showToast('Yoklama Alım Ekranı')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="bell" style="width:12px; height:12px; color:#f59e0b;"></i> Yoklama</button>
+              <button class="btn btn-secondary" onclick="showToast('Onay Bekleyen Seanslar listeleniyor')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="help-circle" style="width:12px; height:12px; color:#3b82f6;"></i> Onay Bekleyenler</button>
+              <button class="btn btn-secondary" onclick="showToast('Etüt Bilgilendirme SMS Şablonu')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="mail" style="width:12px; height:12px;"></i> SMS Gönder</button>
+              <button class="btn btn-secondary" onclick="showToast('Tamamlanan Etüt Analiz Raporu')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-bar-chart" style="width:12px; height:12px;"></i> Biten Etüt Raporlaması</button>
+              <button class="btn btn-secondary" onclick="showToast('Cezalı/Bloke Öğrenci Listesi')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="slash" style="width:12px; height:12px; color:#ef4444;"></i> Cezalı Listesi</button>
+              <button class="btn btn-secondary" onclick="showToast('Etüt Alım İzinleri Düzenleyici')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="lock" style="width:12px; height:12px;"></i> Etüt İzinleri</button>
+              <button class="btn btn-secondary" onclick="showToast('Öğretmen Saat Kısıtlamaları Tanımı')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="calendar-x" style="width:12px; height:12px;"></i> Kısıtlamalar</button>
+              <button class="btn btn-secondary" onclick="showToast('Zaman Dilimleri Tanımları')" style="font-size: 11px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px; margin-left: auto;"><i data-lucide="clock" style="width:12px; height:12px;"></i> Zaman Ayarları</button>
+            </div>
+
+            <div class="split-layout" style="display: flex; gap: 20px; align-items: flex-start; max-width: 100%;">
+              <!-- Left Sidebar: Planner & Student Selector -->
+              <div class="sidebar-panel glass-panel" style="width: 380px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px; box-sizing: border-box;">
+                <h3 style="font-size: 13px; margin: 0; display: flex; align-items: center; gap: 6px;"><i data-lucide="calendar-plus" style="color: var(--color-students);"></i> Etüt Planlama</h3>
+                
+                <form id="study-planner-form" onsubmit="window.designStudySession(event)" style="display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; flex-direction: column; gap: 4px; position: relative;">
+                    <label style="font-size: 11px; color: var(--text-muted);">Personel Seç:</label>
+                    <input type="text" id="study-teacher-select-display" readonly onclick="window.toggleTeacherLookup(event)" value="Lütfen Personel Seçiniz..." style="width: 100%; padding: 8px; font-size: 12px; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; cursor: pointer; box-sizing: border-box;">
+                    
+                    <!-- Advanced Lookup Panel for Staff Selection -->
+                    <div id="study-teacher-lookup-panel" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; width: 340px; z-index: 100; padding: 12px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar); box-sizing: border-box;">
+                      <div style="display:flex; gap:6px; margin-bottom:8px;">
+                        <input type="text" id="study-lookup-teacher-filter" oninput="window.filterLookupTeachers()" placeholder="Personel veya Branş ara..." style="flex:1; padding: 6px; font-size: 11px; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; box-sizing: border-box;">
+                        <button type="button" class="btn btn-secondary" onclick="window.clearTeacherSelection(event)" style="font-size:10px; padding:4px 8px;">Temizle</button>
+                      </div>
+                      <div id="study-lookup-teacher-list" style="max-height: 180px; overflow-y: auto; display:flex; flex-direction:column; gap:4px;">
+                        <!-- Populated dynamically via JS -->
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 11px; color: var(--text-muted);">Ders Seç:</label>
+                    <select id="study-subject-select" style="width: 100%; padding: 8px; font-size: 12px; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; box-sizing: border-box;">
+                      <option value="BİYOLOJİ">BİYOLOJİ</option>
+                      <option value="MATEMATİK">MATEMATİK</option>
+                      <option value="KİMYA">KİMYA</option>
+                      <option value="BEDEN EĞİTİMİ">BEDEN EĞİTİMİ</option>
+                      <option value="COĞRAFYA">COĞRAFYA</option>
+                      <option value="FELSEFE">FELSEFE</option>
+                    </select>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                      <label style="font-size: 11px; color: var(--text-muted);">Tarih Belirle:</label>
+                      <input type="date" id="study-date-input" value="2026-07-10" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                      <label style="font-size: 11px; color: var(--text-muted);">Saat Belirle:</label>
+                      <div style="display: flex; gap: 4px; align-items: center;">
+                        <input type="text" id="study-time-start" value="10:00" placeholder="10:00" style="width: 48%; padding: 8px 4px; text-align: center; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                        <span>-</span>
+                        <input type="text" id="study-time-end" value="10:40" placeholder="10:40" style="width: 48%; padding: 8px 4px; text-align: center; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px;">
+                    <label style="font-size: 11px; color: var(--text-muted);">Konu Belirle:</label>
+                    <input type="text" id="study-topic-input" list="study-topics-list" value="1.ÜNİTE TEKRAR" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <datalist id="study-topics-list">
+                      <option value="1. DÜNYA SAVAŞI">
+                      <option value="1. DÜNYA SAVAŞI BAŞLANGICI">
+                      <option value="1. ÜNİTE KONU TEKRARI">
+                      <option value="1. ÜNİTE TEKRAR">
+                      <option value="1. ÜNİTE TEKTAR">
+                      <option value="10. SINIF 1. ÜNİTE KONU ANLATIMI">
+                    </datalist>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block" style="font-size: 12px; padding: 10px; width:100%; display: flex; justify-content: center; align-items: center; gap: 6px;"><i data-lucide="sparkles" style="width:14px; height:14px;"></i> Tasarla / Planla</button>
+                </form>
+
+                <div style="display: flex; justify-content: space-around; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); padding: 8px 0; font-size: 10px; font-weight: 700;">
+                  <a href="#" onclick="showToast('Etüt Genel Ayarları Açıldı')" style="color: var(--color-students); text-decoration: none;">Ayarları</a>
+                  <a href="#" onclick="showToast('Öğretmen Müsaitlik Saatleri')" style="color: var(--text-main); text-decoration: none;">Personelin Saatleri</a>
+                  <a href="#" onclick="showToast('Sınıf Ders Programı Çakışma Kontrolü')" style="color: var(--text-main); text-decoration: none;">Sınıfın Saatleri</a>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px; font-weight: 800; color: var(--text-main);">Öğrenci Seçimi</span>
+                    <label style="font-size: 10px; color: var(--text-muted); cursor:pointer; display: flex; align-items: center; gap: 4px;">
+                      <input type="checkbox" id="study-bulk-student" style="accent-color: var(--color-students);"> Toplu Seçim
+                    </label>
+                  </div>
+                  <input type="text" id="study-student-search" oninput="window.searchStudyStudents()" placeholder="Arama yapabilirsiniz..." style="width: 100%; padding: 6px 10px; font-size: 11px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                  
+                  <div style="max-height: 180px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--bg-main);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+                      <thead>
+                        <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                          <th style="padding: 6px 8px; font-weight: 700; color: var(--text-main);">Öğrenci</th>
+                          <th style="padding: 6px 8px; font-weight: 700; color: var(--text-main);">Sınıf</th>
+                          <th style="padding: 6px 8px; text-align: center; width: 40px;">Seç</th>
+                        </tr>
+                      </thead>
+                      <tbody id="study-student-table-body">
+                        <!-- Filled dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Area: Scheduled Studies Grid -->
+              <div class="content-panel glass-panel" style="flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h3 style="font-size: 14px; margin: 0; display: flex; align-items: center; gap: 8px;"><i data-lucide="calendar-range" style="color: var(--color-students);"></i> Planlanmış Birebir Etüt Listesi</h3>
+                  <button class="btn btn-secondary" onclick="window.refreshStudies()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="refresh-cw" style="width:12px; height:12px;"></i> Listeyi Güncelle</button>
+                </div>
+                
+                <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; background: var(--bg-main);">
+                    <thead>
+                      <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Öğretmen</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Öğrenci</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Ders</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align:center;">Saat</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align:center;">Gün</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Konu</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align:center;">Ders Tarihi</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align:center;">Kayıt Tarihi</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Sınıf</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align:center; color:#10b981;">SMS Öğr</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align:center; color:#3b82f6;">SMS Veli</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align:center; color:#ec4899;">SMS Ögrt</th>
+                        <th style="padding: 8px; font-weight: 700; color: var(--text-main); text-align: center; width: 40px;">İşlem</th>
+                      </tr>
+                    </thead>
+                    <tbody id="studies-list-table-body">
+                      <!-- Filled dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 6. REHBERLİK VIEW -->
+          <section id="view-counseling" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Görüşmeler - Rehberlik Servisi</h2>
+                <p>Rehberlik görüşme detaylarını, randevuları ve disiplin durumlarını takip edin.</p>
+              </div>
+            </div>
+
+            <!-- Top Toolbar -->
+            <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; background: var(--bg-sidebar); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+              <button class="btn btn-secondary" onclick="window.counselingMenu('gor')"><i data-lucide="messages-square" style="width:14px; height:14px; color:var(--color-students);"></i> Görüşmeler</button>
+              <button class="btn btn-secondary" onclick="window.counselingMenu('rand')"><i data-lucide="calendar" style="width:14px; height:14px; color:#3b82f6;"></i> Randevular</button>
+              <button class="btn btn-secondary" onclick="window.counselingMenu('settings')"><i data-lucide="settings" style="width:14px; height:14px;"></i> Ayarlar</button>
+              <button class="btn btn-secondary" onclick="window.counselingMenu('all')"><i data-lucide="list" style="width:14px; height:14px;"></i> Tüm Görüşmeler</button>
+              <button class="btn btn-secondary" onclick="window.counselingMenu('report')"><i data-lucide="line-chart" style="width:14px; height:14px; color:#10b981;"></i> Ölçme Değerlendirme Raporu</button>
+            </div>
+
+            <div class="glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div class="search-input" style="width: 300px; margin-bottom: 0;">
+                  <i data-lucide="search" style="width:14px; height:14px;"></i>
+                  <input type="text" id="counseling-student-search" oninput="window.searchCounselingStudents()" placeholder="Öğrenci adı ile görüşme ara..." style="box-sizing: border-box; font-size:12px; padding: 8px 10px 8px 32px;">
+                </div>
+                <span style="font-size: 11px; color: var(--text-muted);">Rehberlik görüşme detayları, disiplin/yoklama istatistikleriyle birlikte gösterilmektedir.</span>
+              </div>
+
+              <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+                <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; background: var(--bg-main);">
+                  <thead>
+                    <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Öğrenci</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Sınıfı</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Veli 1</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Veli 2</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center;">Görüşme Sayısı</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center; color:#ef4444;">Yok Yazılma</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center; color:#f59e0b;">Ödev Yapmadı</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center; color:#3b82f6;">Etüte Katılmadı</th>
+                      <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center; width: 80px;">İşlemler</th>
+                    </tr>
+                  </thead>
+                  <tbody id="counseling-report-table-body">
+                    <!-- Filled dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Bottom Action Footer -->
+            <div style="margin-top: 16px; display: flex; justify-content: center; gap: 20px; align-items: center; background: #1e1e2e; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); flex-wrap: wrap;">
+              <button class="btn btn-secondary" id="btn-add-counseling" style="font-size: 11px; padding: 8px 16px; background: transparent; border-color: var(--color-border); color: #fff; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="plus-circle" style="width:14px; height:14px; color:var(--color-students);"></i> Yeni Görüşme</button>
+              <button class="btn btn-secondary" onclick="window.counselingAction('analyze')" style="font-size: 11px; padding: 8px 16px; background: transparent; border-color: var(--color-border); color: #fff; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="bar-chart-2" style="width:14px; height:14px; color:#ef4444;"></i> Analiz Yap</button>
+              <button class="btn btn-secondary" onclick="window.counselingAction('schedule')" style="font-size: 11px; padding: 8px 16px; background: transparent; border-color: var(--color-border); color: #fff; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="calendar" style="width:14px; height:14px; color:#3b82f6;"></i> Randevu Oluştur</button>
+              <button class="btn btn-secondary" onclick="window.counselingAction('history')" style="font-size: 11px; padding: 8px 16px; background: transparent; border-color: var(--color-border); color: #fff; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="clock" style="width:14px; height:14px; color:#f59e0b;"></i> Geçmiş Görüşmeler</button>
+              <button class="btn btn-secondary" onclick="window.counselingAction('refresh')" style="font-size: 11px; padding: 8px 16px; background: transparent; border-color: var(--color-border); color: #fff; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="refresh-cw" style="width:14px; height:14px;"></i> Sayfayı Yenile</button>
+            </div>
+          </section>
+
+          <!-- 7. DERS SAATLERİ VIEW -->
+          <section id="view-hours" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Sınıf Ders Programları</h2>
+                <p>Sınıfların haftalık ders ve etüt saatlerini görüntüleyin.</p>
+              </div>
+              <div class="select-group horizontal">
+                <label for="hours-class-select">Görüntülenecek Sınıf:</label>
+                <select id="hours-class-select" class="large-select">
+                  <option value="12-A">12-A Sınıfı</option>
+                  <option value="12-B">12-B Sınıfı</option>
+                  <option value="11-A">11-A Sınıfı</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="glass-panel schedule-card">
+              <div class="schedule-grid-container" id="schedule-grid">
+                <!-- Weekly Grid will be built here dynamically -->
+              </div>
+            </div>
+          </section>
+
+          <!-- 8. ÖDEVLENDİRME VIEW -->
+          <section id="view-homework" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Öğrenci Ödev Sistemi</h2>
+                <p>Ödev verilen öğrencilerin durumlarını filtreleyin, güncelleyin ve velilere bildirim gönderin.</p>
+              </div>
+            </div>
+
+            <div class="split-layout" style="display: flex; gap: 20px; align-items: flex-start; max-width: 100%;">
+              <!-- Left Sidebar: Filters -->
+              <div class="sidebar-panel glass-panel" style="width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; box-sizing: border-box;">
+                <div>
+                  <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Tarih Arası Yoklama Getir</h4>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 10px; color: var(--text-muted);">Başlangıç Tarihi</label>
+                    <input type="date" id="hw-filter-start" value="2025-10-18" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <label style="font-size: 10px; color: var(--text-muted);">Bitiş Tarihi</label>
+                    <input type="date" id="hw-filter-end" value="2025-10-18" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                  </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                  <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Sınıf ve Tarih Bazında</h4>
+                  <select id="hw-filter-class" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; margin-bottom: 8px;">
+                    <option value="all">Tüm Sınıflar</option>
+                    <option value="10-A (K)">10-A (K)</option>
+                    <option value="27 YAZ 115">27 YAZ 115</option>
+                    <option value="ÇIKARTILANLAR">ÇIKARTILANLAR</option>
+                  </select>
+                  <button class="btn btn-secondary btn-block" onclick="window.filterHomeworkByClass()" style="font-size: 11px; padding: 8px; width: 100%;">Sınıfa Göre Getir</button>
+                </div>
+
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                  <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Özel Kodlara Göre</h4>
+                  <select id="hw-filter-code" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; margin-bottom: 8px;">
+                    <option value="all">Seçim Yapınız</option>
+                  </select>
+                  <button class="btn btn-secondary btn-block" onclick="window.filterHomeworkByCode()" style="font-size: 11px; padding: 8px; width: 100%;">Kodlara Göre Getir</button>
+                </div>
+
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px; margin-top: auto;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-main); cursor: pointer; margin-bottom: 8px;">
+                    <input type="checkbox" id="hw-select-all-sidebar" onchange="window.toggleAllHomeworkCheckboxes(this)" style="accent-color: var(--color-students);"> Toplu Seçim
+                  </label>
+                  <button class="btn btn-danger btn-block" onclick="window.deleteSelectedHomework()" style="font-size: 11px; padding: 8px; background: #dc2626; border: none; color: #fff; width: 100%;">
+                    Sil
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Area: Actions & Grid Table -->
+              <div class="content-panel glass-panel" style="flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="window.homeworkReport('detailed')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="bar-chart-3" style="width:12px; height:12px; color: #10b981;"></i> Detaylı Ödev Raporu</button>
+                    <button class="btn btn-secondary" onclick="window.homeworkReport('staff')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="user-check" style="width:12px; height:12px; color: #3b82f6;"></i> Haftalık Ödev Vermeyenler</button>
+                    <button class="btn btn-secondary" onclick="window.refreshHomeworkTable()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="refresh-cw" style="width:12px; height:12px;"></i> Sayfayı Yenile</button>
+                  </div>
+                  <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="window.openLegacyModal('modal-create-homework')" style="font-size: 11px; padding: 6px 12px; color: var(--color-counseling); display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-plus-2" style="width:12px; height:12px;"></i> Yeni Ödev Ata</button>
+                    <button class="btn btn-secondary" onclick="window.exportHomeworkToExcel()" style="font-size: 11px; padding: 6px 12px; color: #10b981; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-spreadsheet" style="width:12px; height:12px;"></i> Excel'e Aktar</button>
+                    <button class="btn btn-primary" onclick="window.openEditSelectedHomework()" style="font-size: 11px; padding: 6px 12px; background: #3b82f6; border: none; color:#fff;">Seçilenleri Güncelle</button>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; flex-wrap: wrap; gap: 8px;">
+                  <span style="color: var(--text-muted);">Kayıtlı Ödev Gönderimleri listeleniyor.</span>
+                  <div class="search-input" style="width: 200px; margin-bottom: 0;">
+                    <i data-lucide="search" style="width:14px; height:14px;"></i>
+                    <input type="text" id="homework-log-search" oninput="window.searchHomeworkLog()" placeholder="Arama yapabilirsiniz..." style="font-size:12px; padding: 6px 10px 6px 30px; box-sizing: border-box;">
+                  </div>
+                </div>
+
+                <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; background: var(--bg-main);">
+                    <thead>
+                      <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Öğrenci</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Personel</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Sınıfı</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Grup Kodu</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center;">Durumu</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Tarih</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Ders</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center;">Kontrol</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main);">Veli SMS Bilgisi</th>
+                        <th style="padding: 10px; font-weight: 700; color: var(--text-main); text-align: center; width: 40px;">Seç</th>
+                      </tr>
+                    </thead>
+                    <tbody id="homework-log-table-body">
+                      <!-- Dynamic rows from script -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 9. PERSONEL İŞLERİ VIEW -->
+          <section id="view-staff" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>Personel & Öğretmen Kadrosu</h2>
+                <p>Kurumda görev alan yönetici, branş öğretmenleri ve personeller.</p>
+              </div>
+              <button class="btn btn-primary" id="btn-add-staff">
+                <i data-lucide="user-cog"></i> Yeni Personel Ekle
+              </button>
+            </div>
+
+            <div class="staff-grid-layout" id="staff-grid-container">
+              <!-- Dynamic Staff Cards -->
+            </div>
+          </section>
+
+          <!-- 10. İSTATİSTİK VIEW -->
+          <section id="view-stats" class="tab-view">
+            <div class="section-header">
+              <div>
+                <h2>İstatistik ve Raporlar (Ölçme Değerlendirme)</h2>
+                <p>Yoklama analizi, konu kazanım başarı grafiği ve Optik Okuyucu simülatörü.</p>
+              </div>
+            </div>
+
+            <!-- OPTICAL READER SIMULATION PANEL -->
+            <div class="glass-panel" style="margin-bottom: 28px;">
+              <h3 style="display: flex; align-items: center; justify-content: space-between;">
+                <span><i data-lucide="scan-eye"></i> SınavBaşkanım Sınav Optik Okuyucu Simülatörü</span>
+                <span class="badge badge-success">YKS / LGS Uyumlu</span>
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
+                Sınav sonuçlarını sisteme otomatik işlemek için bir optik form dosyası seçin ve "Optik Formu Oku" butonuna basın.
+              </p>
+              <div class="optical-simulator-layout" style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <div class="select-group">
+                  <select id="optical-file-select" style="background-color: var(--color-input-bg); border-color: var(--color-border); padding: 10px 16px; border-radius: var(--radius-md);">
+                    <option value="optik_tyt_deneme_4.dat">TYT Deneme-4 Sonuç Verisi (optik_tyt_deneme_4.dat)</option>
+                    <option value="optik_ayt_deneme_2.dat">AYT Deneme-2 Sonuç Verisi (optik_ayt_deneme_2.dat)</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" id="btn-run-optical">
+                  <i data-lucide="scan"></i> Optik Formu Oku ve Hesapla
+                </button>
+                <div id="optical-success-badge" style="display: none; background-color: rgba(16, 185, 129, 0.15); color: var(--success); padding: 8px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 13px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                  <i data-lucide="check-circle" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"></i> Deneme Sonuçları 7 Öğrenci İçin İşlendi!
+                </div>
+              </div>
+            </div>
+
+            <!-- CHARTS LAYOUT -->
+            <div class="stats-dashboard-grid">
+              <div class="stats-card glass-panel">
+                <h3>Günlük Yoklama Katılım Oranları (Son 5 Gün)</h3>
+                <div class="chart-container">
+                  <canvas id="attendanceChart"></canvas>
+                </div>
+              </div>
+
+              <!-- RADAR CHART FOR KAZANIM SUCCESS -->
+              <div class="stats-card glass-panel">
+                <h3>Kurum Kazanım Başarı Analizi (Konu Bazlı %)</h3>
+                <div class="chart-container">
+                  <canvas id="kazanimRadarChart"></canvas>
+                </div>
+              </div>
+
+              <div class="stats-card glass-panel">
+                <h3>Öğretmen Bazlı Etüt Rezervasyon Sayıları</h3>
+                <div class="chart-container">
+                  <canvas id="studiesChart"></canvas>
+                </div>
+              </div>
+
+              <div class="stats-card glass-panel">
+                <h3>Ödev Teslim Oranları Analizi</h3>
+                <div class="chart-container">
+                  <canvas id="homeworkChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+      <!-- ---------------------------------------------------- -->
+      <!-- MODALS & SLIDE-IN DRAWERS -->
+      <!-- ---------------------------------------------------- -->
+      
+      <!-- DETAILED STUDENT PROFILE DRAWER (K12NET STYLE) -->
+      <div class="modal-overlay" id="drawer-student">
+        <div class="modal-box student-drawer-box" style="max-width: 820px; width: 100%;">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(255, 90, 54, 0.08), rgba(255, 126, 71, 0.08));">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span id="d-stu-avatar" style="font-size: 32px;">👨‍🎓</span>
+              <div>
+                <h3 id="d-stu-name" style="font-size: 18px; font-weight: 700; margin-bottom: 2px;">Ahmet Yılmaz</h3>
+                <span class="badge badge-info" id="d-stu-grade">12-A</span>
+              </div>
+            </div>
+            <button class="modal-close" id="drawer-student-close">&times;</button>
+          </div>
+
+          <!-- Drawer Navigation Tabs -->
+          <div class="drawer-tabs-nav" style="display: flex; border-bottom: 1px solid var(--color-border); background-color: var(--color-input-bg); padding: 0 16px;">
+            <button class="drawer-tab-btn active" data-tab="d-tab-general">Genel Bilgiler</button>
+            <button class="drawer-tab-btn" data-tab="d-tab-finance">Ön Muhasebe & Taksitler</button>
+            <button class="drawer-tab-btn" data-tab="d-tab-behavior">Davranış Kartları</button>
+            <button class="drawer-tab-btn" data-tab="d-tab-exams">Deneme Sınavları & Kazanım</button>
+          </div>
+
+          <!-- Drawer Content Sheets -->
+          <div class="drawer-content" style="padding: 24px; max-height: 480px; overflow-y: auto;">
+            
+            <!-- Tab 1: General Info -->
+            <div class="drawer-tab-sheet active" id="d-tab-general">
+              <div class="glass-panel" style="padding: 18px; background-color: rgba(255,255,255,0.02); margin-bottom: 20px;">
+                <h4 style="margin-bottom: 12px; font-weight: 700; font-size: 14px;"><i data-lucide="user"></i> Öğrenci Bilgileri</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px;">
+                  <p style="font-size: 13px; margin: 0;">Öğrenci ID: <strong id="dstu-id" style="float: right;">—</strong></p>
+                  <p style="font-size: 13px; margin: 0;">Durum: <strong id="d-stu-status-label" style="float: right;" class="badge badge-success">Aktif</strong></p>
+                  <p style="font-size: 13px; margin: 0;">TC Kimlik No: <strong id="dstu-tc" style="float: right;">—</strong></p>
+                  <p style="font-size: 13px; margin: 0;">Doğum Tarihi: <strong id="dstu-birth" style="float: right;">—</strong></p>
+                  <p style="font-size: 13px; margin: 0;">Telefon Numarası: <strong id="dstu-phone" style="float: right;">—</strong></p>
+                  <p style="font-size: 13px; margin: 0;">Branş / Kategori: <strong id="dstu-category" style="float: right;">—</strong></p>
+                </div>
+                <div style="margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 8px;">
+                  <p style="font-size: 13px; margin: 0;">Ev Adresi: <strong id="dstu-address" style="display: block; margin-top: 4px; font-weight: 600; color: var(--text-secondary);">—</strong></p>
+                </div>
+              </div>
+
+              <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 10px;"><i data-lucide="users"></i> Veli Bilgileri</h4>
+              <div id="d-stu-parents-container">
+                <!-- Veli kartları dinamik olarak buraya eklenecektir -->
+              </div>
+            </div>
+
+            <!-- Tab 2: Ön Muhasebe & Taksitler -->
+            <div class="drawer-tab-sheet" id="d-tab-finance">
+              <!-- Balances overview -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                <div style="background-color: rgba(255,255,255,0.02); border: 1px solid var(--color-border); padding: 12px; border-radius: var(--radius-md); text-align: center;">
+                  <span style="font-size: 11px; color: var(--text-muted);">Sözleşme Toplamı</span>
+                  <h4 style="font-size: 16px; font-weight: 700; margin-top: 4px;" id="d-fin-total">0.00 TL</h4>
+                </div>
+                <div style="background-color: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 12px; border-radius: var(--radius-md); text-align: center;">
+                  <span style="font-size: 11px; color: var(--success);">Tahsil Edilen (Ödenen)</span>
+                  <h4 style="font-size: 16px; font-weight: 700; color: var(--success); margin-top: 4px;" id="d-fin-paid">0.00 TL</h4>
+                </div>
+                <div style="background-color: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.2); padding: 12px; border-radius: var(--radius-md); text-align: center;">
+                  <span style="font-size: 11px; color: var(--danger);">Kalan Bakiye</span>
+                  <h4 style="font-size: 16px; font-weight: 700; color: var(--danger); margin-top: 4px;" id="d-fin-remaining">0.00 TL</h4>
+                </div>
+              </div>
+
+              <!-- Installments Table -->
+              <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 8px;"><i data-lucide="calendar"></i> Gelecek Taksit Planı</h4>
+              <div class="responsive-table" style="margin-bottom: 20px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Vade Tarihi</th>
+                      <th>Taksit Tutarı</th>
+                      <th>Durum</th>
+                      <th>İşlem</th>
+                    </tr>
+                  </thead>
+                  <tbody id="d-fin-installments-tbody">
+                    <!-- Installment Rows -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Payments (Receipts) Log -->
+              <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 8px;"><i data-lucide="receipt"></i> Tahsilat Geçmişi & Makbuzlar</h4>
+              <div class="responsive-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Ödeme Tarihi</th>
+                      <th>Tutar</th>
+                      <th>Ödeme Şekli</th>
+                      <th>Kasa Görevlisi</th>
+                      <th>Aksiyon</th>
+                    </tr>
+                  </thead>
+                  <tbody id="d-fin-payments-tbody">
+                    <!-- Payments Rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 3: Davranış Kartları -->
+            <div class="drawer-tab-sheet" id="d-tab-behavior">
+              <div style="display: grid; grid-template-columns: 240px 1fr; gap: 20px;">
+                <!-- Points board & Card Giver form -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <div style="background-color: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
+                    <span style="font-size: 12px; color: var(--text-muted);">Mevcut Davranış Puanı</span>
+                    <h2 style="font-size: 36px; font-weight: 800; color: var(--color-attendance); margin-top: 8px;" id="d-beh-score">100</h2>
+                  </div>
+
+                  <div class="glass-panel" style="padding: 14px;">
+                    <h4 style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">Davranış Kartı Düzenle</h4>
+                    <form id="d-beh-form">
+                      <div class="form-group" style="margin-bottom: 10px;">
+                        <label for="d-beh-type" style="font-size: 10px;">Kart Türü</label>
+                        <select id="d-beh-type" style="padding: 6px 12px; font-size: 11px;">
+                          <option value="plus">Olumlu (+5 Puan)</option>
+                          <option value="minus">Olumsuz (-3 Puan)</option>
+                        </select>
+                      </div>
+                      <div class="form-group" style="margin-bottom: 10px;">
+                        <label for="d-beh-reason" style="font-size: 10px;">Açıklama / Gerekçe</label>
+                        <input type="text" id="d-beh-reason" placeholder="Örn: Derse aktif katılım" required style="padding: 6px 12px; font-size: 11px;">
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-block" style="padding: 8px; font-size: 11px;">
+                        Kartı Ver ve Kaydet
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Cards Log Feed -->
+                <div>
+                  <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 10px;">Geçmiş Davranış Kartı Logları</h4>
+                  <div style="display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto;" id="d-beh-logs-container">
+                    <!-- Logs list -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 4: Deneme Sınavları & Kazanım -->
+            <div class="drawer-tab-sheet" id="d-tab-exams">
+              <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 8px;"><i data-lucide="award"></i> Deneme Sınav Net Sonuçları</h4>
+              <div class="responsive-table" style="margin-bottom: 20px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Sınav Adı</th>
+                      <th>Türkçe (Net)</th>
+                      <th>Sosyal (Net)</th>
+                      <th>Mat (Net)</th>
+                      <th>Fen (Net)</th>
+                      <th>Toplam Net</th>
+                      <th>Puan</th>
+                      <th>Sıra</th>
+                    </tr>
+                  </thead>
+                  <tbody id="d-exams-tbody">
+                    <!-- Exam rows -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Student success trends -->
+              <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 10px;"><i data-lucide="trending-up"></i> Bireysel Ders Kazanım Başarısı</h4>
+              <div class="chart-container-large" style="height: 220px;">
+                <canvas id="studentExamChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+          
+          <div class="modal-footer" style="padding: 16px 24px; background-color: var(--color-input-bg);">
+            <button class="btn btn-secondary" id="drawer-student-cancel-btn">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Student Modal (K12NET-style Expanded Registration) -->
+      <div class="modal-overlay" id="modal-student" style="align-items: flex-start; overflow-y: auto; padding: 40px 20px;">
+        <div class="modal-box" style="max-width:700px;width:100%;">
+          <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,90,54,0.08),rgba(255,126,71,0.08));">
+            <h3 id="modal-student-title"><i data-lucide="user-plus"></i> Yeni Öğrenci Kaydı</h3>
+            <button class="modal-close" id="modal-student-close">&times;</button>
+          </div>
+          <form id="modal-student-form">
+            <div style="padding:24px;">
+
+              <!-- TAB 1: ÖĞRENCI -->
+              <div class="reg-tab-sheet active" id="reg-tab-student">
+                <p class="reg-section-label">Öğrenci Kişisel Bilgileri</p>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-stu-name">İsim Soyisim <span class="req">*</span></label>
+                    <input type="text" id="m-stu-name" required placeholder="Öğrencinin tam adı">
+                  </div>
+                  <div class="form-group">
+                    <label for="m-stu-phone">Telefon Numarası <span class="req">*</span></label>
+                    <input type="tel" id="m-stu-phone" required placeholder="05XX XXX XXXX" maxlength="14">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-stu-tc">TC Kimlik No <span class="req">*</span></label>
+                    <input type="text" id="m-stu-tc" required placeholder="11 haneli TC No" maxlength="11">
+                  </div>
+                  <div class="form-group">
+                    <label for="m-stu-birth">Doğum Tarihi <span class="req">*</span></label>
+                    <input type="date" id="m-stu-birth" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="m-stu-address">Adres <span class="req">*</span></label>
+                  <textarea id="m-stu-address" rows="2" required placeholder="Mahalle, Cadde/Sokak, No, İlçe / İl"></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-stu-grade">Sınıf <span class="req">*</span></label>
+                    <select id="m-stu-grade" required>
+                      <option value="">-- Sınıf Seçin --</option>
+                      <optgroup label="12. Sınıflar">
+                        <option value="12-A">12-A</option>
+                        <option value="12-B">12-B</option>
+                      </optgroup>
+                      <optgroup label="11. Sınıflar">
+                        <option value="11-A">11-A</option>
+                        <option value="11-B">11-B</option>
+                      </optgroup>
+                      <optgroup label="10. Sınıflar">
+                        <option value="10-A">10-A</option>
+                        <option value="10-B">10-B</option>
+                      </optgroup>
+                      <optgroup label="9. Sınıflar">
+                        <option value="9-A">9-A</option>
+                        <option value="9-B">9-B</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="m-stu-category">Branş / Kategori <span class="req">*</span></label>
+                    <div style="display: flex; gap: 8px;">
+                      <select id="m-stu-category" required style="flex: 1;">
+                        <!-- Kategoriler dinamik olarak yüklenecektir -->
+                      </select>
+                      <button type="button" class="btn btn-secondary" id="btn-create-category" style="padding: 0 12px; font-size: 18px; height: 42px; display: inline-flex; align-items: center; justify-content: center;" title="Yeni Kategori Oluştur">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                 <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-stu-status">Kayıt Durumu</label>
+                    <select id="m-stu-status">
+                      <option value="Aktif">&#x2705; Aktif</option>
+                      <option value="Pasif">&#x26D4; Pasif</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 2: VELİ 1 -->
+              <div class="reg-tab-sheet" id="reg-tab-parent1">
+                <p class="reg-section-label" style="color:var(--color-counseling);">Birincil Veli (Veli 1) — Zorunlu</p>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-p1-name">İsim Soyisim <span class="req">*</span></label>
+                    <input type="text" id="m-p1-name" required placeholder="Velinin tam adı">
+                  </div>
+                  <div class="form-group">
+                    <label for="m-p1-phone">Telefon Numarası <span class="req">*</span></label>
+                    <input type="tel" id="m-p1-phone" required placeholder="05XX XXX XXXX" maxlength="14">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-p1-tc">TC Kimlik No <span class="req">*</span></label>
+                    <input type="text" id="m-p1-tc" required placeholder="11 haneli TC No" maxlength="11">
+                  </div>
+                  <div class="form-group">
+                    <label for="m-p1-birth">Doğum Tarihi</label>
+                    <input type="date" id="m-p1-birth">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="m-p1-address">Adres</label>
+                  <textarea id="m-p1-address" rows="2" placeholder="Mahalle, Cadde/Sokak, No, İlçe / İl"></textarea>
+                </div>
+                <div class="form-group" style="background-color:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius-md);padding:12px;">
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;">
+                    <input type="checkbox" id="m-p1-same-address"> Öğrenci ile aynı adreste ikamet ediyor
+                  </label>
+                </div>
+              </div>
+
+              <!-- TAB 3: VELİ 2 -->
+              <div class="reg-tab-sheet" id="reg-tab-parent2">
+                <p class="reg-section-label">İkincil Veli (Veli 2) — İsteğe Bağlı</p>
+                <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Tek velisi olan öğrenciler için boş bırakabilirsiniz.</p>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-p2-name">İsim Soyisim</label>
+                    <input type="text" id="m-p2-name" placeholder="İkinci velinin tam adı">
+                  </div>
+                  <div class="form-group">
+                    <label for="m-p2-phone">Telefon Numarası</label>
+                    <input type="tel" id="m-p2-phone" placeholder="05XX XXX XXXX" maxlength="14">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="m-p2-tc">TC Kimlik No</label>
+                    <input type="text" id="m-p2-tc" placeholder="11 haneli TC No" maxlength="11">
+                  </div>
+                  <div class="form-group">
+                    <label for="m-p2-birth">Doğum Tarihi</label>
+                    <input type="date" id="m-p2-birth">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="m-p2-address">Adres</label>
+                  <textarea id="m-p2-address" rows="2" placeholder="Mahalle, Cadde/Sokak, No, İlçe / İl"></textarea>
+                </div>
+                <div class="form-group" style="background-color:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius-md);padding:12px;">
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;">
+                    <input type="checkbox" id="m-p2-same-address"> Öğrenci ile aynı adreste ikamet ediyor
+                  </label>
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer" style="padding:16px 24px;background-color:var(--color-input-bg);display:flex;gap:8px;justify-content:flex-end;">
+              <button type="button" class="btn btn-secondary" id="modal-student-cancel">Vazgeç</button>
+              <button type="submit" class="btn btn-primary" id="modal-reg-submit" style="background:linear-gradient(135deg,#10b981,#059669);"><i data-lucide="save"></i> Kaydı Tamamla</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- GROUP & CLASS MANAGEMENT MODAL -->
+      <div class="modal-overlay" id="modal-groups-classes" style="align-items: flex-start; overflow-y: auto; padding: 40px 20px;">
+        <div class="modal-box" style="max-width: 800px; width: 100%;">
+          <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,90,54,0.08),rgba(255,126,71,0.08));">
+            <h3><i data-lucide="layers"></i> Grup ve Sınıf Yönetimi</h3>
+            <button class="modal-close" id="modal-groups-classes-close">&times;</button>
+          </div>
+          
+          <div style="padding: 24px;">
+            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+              
+              <!-- 1. GROUPS SECTION -->
+              <div style="flex: 1; min-width: 300px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--color-students); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="folder" style="width:16px; height:16px;"></i> Gruplar (Kategoriler)
+                </h4>
+                
+                <div id="manage-groups-list" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 8px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; background: var(--color-input-bg);">
+                  <!-- Populated dynamically -->
+                </div>
+                
+                <form id="form-manage-group" style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                  <input type="hidden" id="edit-group-id">
+                  <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px; color: var(--text-main);" id="title-group-form">Yeni Grup Ekle</div>
+                  <div class="form-row" style="margin-bottom: 8px; gap: 8px;">
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                      <label style="font-size: 10px; margin-bottom: 2px;">Grup Adı</label>
+                      <input type="text" id="group-name-input" required placeholder="Örn: Sayısal" style="padding: 6px 10px; font-size: 12px; height: 34px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0; flex: 0.6;">
+                      <label style="font-size: 10px; margin-bottom: 2px;">Kodu (Kısa)</label>
+                      <input type="text" id="group-code-input" required placeholder="Örn: SAY" style="padding: 6px 10px; font-size: 12px; height: 34px;">
+                    </div>
+                  </div>
+                  <div class="form-row" style="margin-bottom: 8px;">
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                      <label style="font-size: 10px; margin-bottom: 2px;">Grup Rengi</label>
+                      <select id="group-color-input" style="padding: 6px 10px; font-size: 12px; height: 34px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--bg-main); color: var(--text-main);">
+                        <option value="var(--color-students)">Mavi</option>
+                        <option value="var(--color-finance)">Mor</option>
+                        <option value="var(--color-attendance)">Turuncu</option>
+                        <option value="var(--color-counseling)">Yeşil</option>
+                        <option value="#f43f5e">Kırmızı</option>
+                        <option value="#eab308">Sarı</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-group-edit" style="display: none; padding: 5px 10px; font-size: 11px;">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-group" style="padding: 5px 10px; font-size: 11px; background: linear-gradient(135deg, var(--color-students), var(--color-studies));">Grubu Kaydet</button>
+                  </div>
+                </form>
+              </div>
+              
+              <div style="width: 1px; background: var(--color-border); align-self: stretch;"></div>
+              
+              <!-- 2. CLASSES SECTION -->
+              <div style="flex: 1; min-width: 300px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--color-students); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="graduation-cap" style="width:16px; height:16px;"></i> Sınıflar
+                </h4>
+                
+                <div id="manage-classes-list" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 8px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; background: var(--color-input-bg);">
+                  <!-- Populated dynamically -->
+                </div>
+                
+                <form id="form-manage-class" style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                  <input type="hidden" id="edit-class-name-old">
+                  <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px; color: var(--text-main);" id="title-class-form">Yeni Sınıf Ekle</div>
+                  <div class="form-row" style="margin-bottom: 8px; gap: 8px;">
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                      <label style="font-size: 10px; margin-bottom: 2px;">Sınıf Adı</label>
+                      <input type="text" id="class-name-input" required placeholder="Örn: 12-C" style="padding: 6px 10px; font-size: 12px; height: 34px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                      <label style="font-size: 10px; margin-bottom: 2px;">Bağlı Olduğu Grup</label>
+                      <select id="class-group-select" required style="padding: 6px 10px; font-size: 12px; height: 34px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--bg-main); color: var(--text-main);">
+                        <!-- Dynamically filled -->
+                      </select>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-class-edit" style="display: none; padding: 5px 10px; font-size: 11px;">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-class" style="padding: 5px 10px; font-size: 11px; background: linear-gradient(135deg, var(--color-students), var(--color-studies));">Sınıfı Kaydet</button>
+                  </div>
+                </form>
+              </div>
+              
+            </div>
+          </div>
+          
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" id="modal-groups-classes-cancel">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMPLE CATEGORY CREATION MODAL -->
+      <div class="modal-overlay" id="modal-create-category-simple" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 320px; width: 100%; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; color: var(--text-main);">
+            <i data-lucide="folder-plus" style="width:16px; height:16px; color: var(--color-students);"></i> Kategori Oluştur
+          </h3>
+          <form id="form-create-category-simple">
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Kategori / Grup Adı</label>
+              <input type="text" id="simple-cat-name-input" required placeholder="Sayısal, Sözel, Eşit Ağırlık..." style="padding: 8px 12px; font-size: 12px; width: 100%; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button type="button" class="btn btn-secondary" id="btn-close-simple-cat" style="padding: 6px 12px; font-size: 11px;">Vazgeç</button>
+              <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: linear-gradient(135deg, var(--color-students), var(--color-studies)); border: none; cursor: pointer;">Kategori Ekle</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- SIMPLE CLASS CREATION MODAL -->
+      <div class="modal-overlay" id="modal-create-class-simple" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 320px; width: 100%; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; color: var(--text-main);">
+            <i data-lucide="plus-circle" style="width:16px; height:16px; color: var(--color-students);"></i> Sınıf Oluştur
+          </h3>
+          <form id="form-create-class-simple">
+            <input type="hidden" id="simple-class-cat-id">
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Sınıf Adı</label>
+              <input type="text" id="simple-class-name-input" required placeholder="Örn: 12-A, 11-B..." style="padding: 8px 12px; font-size: 12px; width: 100%; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button type="button" class="btn btn-secondary" id="btn-close-simple-class" style="padding: 6px 12px; font-size: 11px;">Vazgeç</button>
+              <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: linear-gradient(135deg, var(--color-students), var(--color-studies)); border: none; cursor: pointer;">Sınıf Ekle</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- CLASS STUDENTS LIST MODAL -->
+      <div class="modal-overlay" id="modal-class-students" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 600px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,90,54,0.08),rgba(255,126,71,0.08));">
+            <h3 id="class-students-title" style="display:flex; align-items:center; gap:8px;"><i data-lucide="users" style="color:var(--color-students);"></i> Sınıf Öğrenci Listesi</h3>
+            <button class="modal-close" id="modal-class-students-close">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+              <span id="class-students-count-badge" class="badge" style="background: var(--color-students)22; color: var(--color-students); font-weight: 700; padding: 4px 10px; font-size: 11px; border-radius: var(--radius-sm);">Mevcut: 0 Öğrenci</span>
+            </div>
+            
+            <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); max-height: 300px; overflow-y: auto; background: var(--bg-main);">
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                <thead>
+                  <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Numara</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Ad Soyad</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Öğrenci Tel</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Veli Tel</th>
+                  </tr>
+                </thead>
+                <tbody id="class-students-table-body">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" id="modal-class-students-cancel" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL CATEGORIES & CLASSES GRID MODAL -->
+      <div class="modal-overlay" id="modal-categories-grid">
+        <div class="modal-box" style="max-width: 960px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,90,54,0.08),rgba(255,126,71,0.08));">
+            <h3 style="display:flex; align-items:center; gap:8px;"><i data-lucide="layers" style="color:var(--color-students);"></i> Sınıf & Kategori Yönetimi</h3>
+            <button class="modal-close" id="modal-categories-grid-close">&times;</button>
+          </div>
+          <div style="padding: 20px; max-height: 550px; overflow-y: auto;">
+            <div id="inline-categories-classes-container" style="display: flex; flex-direction: column; gap: 12px; width: 100%; min-width: 0; box-sizing: border-box;">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" id="modal-categories-grid-cancel" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORY MANAGEMENT MODAL -->
+      <div class="modal-overlay" id="modal-category">
+        <div class="modal-box" style="max-width:480px; width:100%;">
+          <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,90,54,0.08),rgba(255,126,71,0.08));">
+            <h3><i data-lucide="tag"></i> Kategori / Branş Yönetimi</h3>
+            <button class="modal-close" id="modal-category-close">&times;</button>
+          </div>
+          <div style="padding: 24px; max-height: 520px; overflow-y: auto;">
+
+            <!-- Mevcut Kategoriler -->
+            <div style="margin-bottom: 24px;">
+              <p style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Mevcut Kategoriler</p>
+              <div id="category-list-container" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Kategoriler dinamik yüklenir -->
+              </div>
+            </div>
+
+            <!-- Yeni Kategori Ekle -->
+            <div style="border-top: 1px solid var(--color-border); padding-top: 20px;">
+              <p style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;">Yeni Kategori Ekle</p>
+              <form id="modal-category-form">
+                <div class="form-row" style="margin-bottom: 14px;">
+                  <div class="form-group">
+                    <label for="m-cat-name">Kategori Adı <span class="req">*</span></label>
+                    <input type="text" id="m-cat-name" required placeholder="Örn: Sayısal, Dil, STEM">
+                  </div>
+                  <div class="form-group">
+                    <label for="m-cat-code">Kısa Kod <span class="req">*</span></label>
+                    <input type="text" id="m-cat-code" required placeholder="SAY, DİL" maxlength="5">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, var(--color-students), var(--color-studies)); width: 100%; justify-content: center; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="plus" style="width:13px;height:13px;"></i> Kategoriyi Ekle
+                </button>
+              </form>
+            </div>
+
+          </div>
+          <div style="padding: 12px 24px; background: var(--color-input-bg); border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" id="modal-category-cancel">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Counseling Modal -->
+      <div class="modal-overlay" id="modal-counseling">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3><i data-lucide="heart-handshake"></i> Görüşme Kayıt Girişi</h3>
+            <button class="modal-close" id="modal-counseling-close">&times;</button>
+          </div>
+          <form id="modal-counseling-form">
+            <div class="form-group">
+              <label for="m-coun-student">Öğrenci</label>
+              <select id="m-coun-student" required>
+                <!-- Dynamic student options -->
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="m-coun-teacher">Görüşen Rehber Öğretmen</label>
+                <select id="m-coun-teacher" required>
+                  <!-- Dynamic staff options -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="m-coun-date">Görüşme Tarihi</label>
+                <input type="date" id="m-coun-date" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="m-coun-topic">Konu / Randevu Sebebi</label>
+              <input type="text" id="m-coun-topic" required placeholder="Örn: Sınav kaygısı, çalışma programı düzenleme">
+            </div>
+            <div class="form-group">
+              <label for="m-coun-notes">Görüşme Detaylı Notları</label>
+              <textarea id="m-coun-notes" rows="5" required placeholder="Görüşmeye dair özel notlar, kararlaştırılan eylem planları..."></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" id="modal-counseling-cancel">Vazgeç</button>
+              <button type="submit" class="btn btn-primary">Görüşmeyi Kaydet</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Add Staff Modal -->
+      <div class="modal-overlay" id="modal-staff">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3><i data-lucide="user-cog"></i> Yeni Personel Ekle</h3>
+            <button class="modal-close" id="modal-staff-close">&times;</button>
+          </div>
+          <form id="modal-staff-form">
+            <div class="form-group">
+              <label for="m-stf-name">Adı Soyadı</label>
+              <input type="text" id="m-stf-name" required placeholder="Öğretmen / Personel adı soyadı">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="m-stf-role">Görevi / Ünvanı</label>
+                <input type="text" id="m-stf-role" required placeholder="Örn: Matematik Öğretmeni, İdari Sorumlu">
+              </div>
+              <div class="form-group">
+                <label for="m-stf-dept">Departman / Branş</label>
+                <select id="m-stf-dept">
+                  <option value="Matematik">Matematik</option>
+                  <option value="Fizik">Fizik</option>
+                  <option value="Kimya">Kimya</option>
+                  <option value="Biyoloji">Biyoloji</option>
+                  <option value="Rehberlik">Rehberlik</option>
+                  <option value="Yönetim">Yönetim</option>
+                  <option value="İdari İşler">İdari İşler</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="m-stf-contact">İletişim Numarası</label>
+              <input type="text" id="m-stf-contact" required placeholder="05XX XXX XXXX">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" id="modal-staff-cancel">Vazgeç</button>
+              <button type="submit" class="btn btn-primary">Personeli Kaydet</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- PRINTABLE RECEIPT / MOCK INVOICE MODAL -->
+      <div class="modal-overlay" id="modal-receipt">
+        <div class="modal-box" style="max-width: 420px; font-family: monospace; color: #000; background-color: #fff; border: 2px solid #000;">
+          <div style="padding: 24px;">
+            <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 12px; margin-bottom: 16px;">
+              <h2 style="font-size: 16px; font-weight: 800;">EDUMERCEK EĞİTİM KURUMLARI</h2>
+              <p style="font-size: 10px;">Tahsilat Alındı Makbuzu</p>
+              <p style="font-size: 9px;" id="r-date">Tarih: 27.06.2026</p>
+            </div>
+            <div style="font-size: 11px; line-height: 1.6; margin-bottom: 16px;">
+              <p>Makbuz No: <strong id="r-no">RC-9923</strong></p>
+              <p>Öğrenci: <strong id="r-student">Ahmet Yılmaz</strong></p>
+              <p>Sınıfı: <span id="r-grade">12-A</span></p>
+              <p>Veli Adı: <span id="r-parent">Mehmet Yılmaz</span></p>
+              <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 6px 0; margin: 8px 0;">
+                <p>Ödeme Türü: <strong id="r-method">Nakit</strong></p>
+                <p style="font-size: 14px;">Tutar: <strong id="r-amount">5.000,00 TL</strong></p>
+              </div>
+              <p>Tahsil Eden: <span id="r-collector">Seda Bulut</span></p>
+            </div>
+            <div style="text-align: center; font-size: 9px; margin-top: 24px; border-top: 1px dashed #000; padding-top: 12px;">
+              <p>Kurumumuza yaptığınız ödeme için teşekkür ederiz.</p>
+              <p>Bu belge sistem tarafından otomatik üretilmiştir.</p>
+            </div>
+          </div>
+          <div class="modal-footer" style="background-color: #f1f5f9; padding: 12px; border-top: 1px solid #ddd;">
+            <button class="btn btn-secondary" onclick="document.getElementById('modal-receipt').classList.remove('active')" style="color: #333;">Kapat</button>
+            <button class="btn btn-primary" onclick="window.print()" style="background-color: #000; color: #fff;">Makbuzu Yazdır</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. PRE-REGISTRATION MODAL -->
+      <div class="modal-overlay" id="modal-pre-reg">
+        <div class="modal-box" style="max-width: 500px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(251, 146, 60, 0.1));">
+            <h3 style="display: flex; align-items: center; gap: 8px; color: #f97316;"><i data-lucide="user-plus"></i> Ön Kayıt İşlemleri</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-pre-reg')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form id="form-pre-reg" onsubmit="window.submitPreReg(event)">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Öğrenci Ad Soyad</label>
+                <input type="text" id="pre-reg-name" required placeholder="Ad Soyad giriniz..." style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Öğrenci Gsm</label>
+                  <input type="text" id="pre-reg-phone" placeholder="05xx..." style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                </div>
+                <div style="flex: 1;">
+                  <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Aday Sınıf / Seviye</label>
+                  <select id="pre-reg-grade" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <option value="9-Seviye">9. Sınıf Seviyesi</option>
+                    <option value="10-Seviye">10. Sınıf Seviyesi</option>
+                    <option value="11-Seviye">11. Sınıf Seviyesi</option>
+                    <option value="12-Seviye">12. Sınıf Seviyesi</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Veli Ad Soyad</label>
+                <input type="text" id="pre-reg-parent" required placeholder="Veli adı..." style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div class="form-group" style="margin-bottom: 16px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Görüşme Notları</label>
+                <textarea id="pre-reg-notes" rows="3" placeholder="Ön kayıt detayları, indirim ve etüt planı..." style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; resize: vertical;"></textarea>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-pre-reg')" style="padding: 6px 12px; font-size: 11px;">Vazgeç</button>
+                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: #f97316; border: none; color: #fff;">Başvuruyu Kaydet</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. ACCOUNTING SUMMARY MODAL -->
+      <div class="modal-overlay" id="modal-accounting">
+        <div class="modal-box" style="max-width: 750px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(192, 132, 252, 0.1));">
+            <h3 style="display: flex; align-items: center; gap: 8px; color: #a855f7;"><i data-lucide="calculator"></i> Muhasebe İşlemleri</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-accounting')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+              <div style="background: var(--bg-main); border: 1px solid var(--color-border); padding: 12px; border-radius: var(--radius-sm);">
+                <div style="font-size: 10px; color: var(--text-muted);">Toplam Sözleşme</div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="acc-total-contract">315.000 TL</div>
+              </div>
+              <div style="background: var(--bg-main); border: 1px solid var(--color-border); padding: 12px; border-radius: var(--radius-sm);">
+                <div style="font-size: 10px; color: #10b981;">Tahsil Edilen</div>
+                <div style="font-size: 18px; font-weight: 800; color: #10b981; margin-top: 4px;" id="acc-total-paid">180.000 TL</div>
+              </div>
+              <div style="background: var(--bg-main); border: 1px solid var(--color-border); padding: 12px; border-radius: var(--radius-sm);">
+                <div style="font-size: 10px; color: #f43f5e;">Kalan Bakiye</div>
+                <div style="font-size: 18px; font-weight: 800; color: #f43f5e; margin-top: 4px;" id="acc-total-remaining">135.000 TL</div>
+              </div>
+            </div>
+            
+            <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); max-height: 250px; overflow-y: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; background: var(--bg-main);">
+                <thead>
+                  <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                    <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Öğrenci</th>
+                    <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Sözleşme</th>
+                    <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Tahsil Edilen</th>
+                    <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Kalan</th>
+                    <th style="padding: 8px; font-weight: 700; color: var(--text-main);">Taksit</th>
+                  </tr>
+                </thead>
+                <tbody id="acc-student-table-body">
+                  <!-- Dynamically populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-accounting')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. BELL SCHEDULE MODAL -->
+      <div class="modal-overlay" id="modal-bell-schedule" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 960px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(248, 113, 113, 0.08));">
+            <h3 style="display: flex; align-items: center; gap: 8px; color: #ef4444;"><i data-lucide="bell"></i> Zil İşlemleri & Ders Saatleri Kontrol Merkezi</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-bell-schedule')">&times;</button>
+          </div>
+          
+          <!-- Top Toolbar -->
+          <div style="display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--color-border); background: var(--color-input-bg); flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="window.playBell()" style="font-size: 11px; padding: 6px 12px; background: #dc2626; border: none; color:#fff; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="play" style="width:12px; height:12px;"></i> Şimdi Çal</button>
+            <button class="btn btn-secondary" onclick="window.stopBell()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="square" style="width:12px; height:12px; color:#ef4444;"></i> Durdur</button>
+            <button class="btn btn-secondary" onclick="showToast('Ders Saatleri Tanımlama Ekranı')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="hourglass" style="width:12px; height:12px;"></i> Ders Saatleri Tanımları</button>
+            <button class="btn btn-secondary" onclick="showToast('Zil Sesi Seçildi')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="music" style="width:12px; height:12px;"></i> Zil Sesi Seç</button>
+            <button class="btn btn-secondary" onclick="showToast('Yeni Zil Ses Kaydı Eklendi')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="folder-plus" style="width:12px; height:12px;"></i> Zil Sesi Ekle</button>
+            <button class="btn btn-secondary" onclick="showToast('Zamanlı Otomatik Zil Başlatıldı')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px; margin-left: auto;"><i data-lucide="alarm-clock" style="width:12px; height:12px; color:#f59e0b;"></i> Zamanlı Zil Başlat</button>
+          </div>
+
+          <div style="padding: 20px; display: flex; gap: 20px; align-items: center; justify-content: space-between;">
+            <!-- Left Table: Hafta İçi -->
+            <div style="flex: 1; border: 1px solid var(--color-border); border-radius: var(--radius-sm); overflow: hidden;">
+              <div style="background: #10b981; color: #fff; padding: 6px 12px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">Hafta İçi Ders Çizelgesi</div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; background: var(--bg-main);">
+                <thead>
+                  <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                    <th style="padding: 6px; font-weight: 700; color: var(--text-main);">Ders</th>
+                    <th style="padding: 6px; font-weight: 700; color: #3b82f6;">Öğrenci Zili</th>
+                    <th style="padding: 6px; font-weight: 700; color: #ec4899;">Öğretmen Zili</th>
+                    <th style="padding: 6px; font-weight: 700; color: #f59e0b;">Çıkış Zili</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">1. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6; font-weight:700;">08:30</td>
+                    <td style="padding: 5px 6px; color: #ec4899; font-weight:700;">08:30</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">09:10</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">2. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">09:20</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">09:20</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">10:00</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">3. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">10:10</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">10:10</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">10:50</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">4. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">11:00</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">11:00</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">11:40</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">5. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">11:50</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">11:50</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">12:30</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">6. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">12:40</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">12:40</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">13:20</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">7. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">13:30</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">13:30</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">14:10</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Center Image: Bell -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: center; width: 140px; flex-shrink: 0;">
+              <div id="bell-svg-container" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); border-radius: 50%; border: 2px solid #f59e0b; cursor: pointer; transition: all 0.3s;" onclick="window.playBell()">
+                <i data-lucide="bell" style="width: 48px; height: 48px; color: #f59e0b;"></i>
+              </div>
+              <span id="bell-status-label" style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Zil Hazır</span>
+            </div>
+
+            <!-- Right Table: Hafta Sonu -->
+            <div style="flex: 1; border: 1px solid var(--color-border); border-radius: var(--radius-sm); overflow: hidden;">
+              <div style="background: #10b981; color: #fff; padding: 6px 12px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">Hafta Sonu Ders Çizelgesi</div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: left; background: var(--bg-main);">
+                <thead>
+                  <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                    <th style="padding: 6px; font-weight: 700; color: var(--text-main);">Ders</th>
+                    <th style="padding: 6px; font-weight: 700; color: #3b82f6;">Öğrenci Zili</th>
+                    <th style="padding: 6px; font-weight: 700; color: #ec4899;">Öğretmen Zili</th>
+                    <th style="padding: 6px; font-weight: 700; color: #f59e0b;">Çıkış Zili</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">1. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6; font-weight:700;">08:50</td>
+                    <td style="padding: 5px 6px; color: #ec4899; font-weight:700;">08:50</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">09:30</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">2. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">09:40</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">09:40</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">10:20</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">3. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">10:30</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">10:30</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">11:10</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">4. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">11:20</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">11:20</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">12:00</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">5. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">12:50</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">12:50</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">13:30</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">6. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">13:40</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">13:40</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">14:20</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 5px 6px; font-weight: 700;">7. Ders</td>
+                    <td style="padding: 5px 6px; color: #3b82f6;">14:30</td>
+                    <td style="padding: 5px 6px; color: #ec4899;">14:30</td>
+                    <td style="padding: 5px 6px; color: #f59e0b;">15:10</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-bell-schedule')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ONLINE RESULTS MODAL -->
+      <div class="modal-overlay" id="modal-online-results">
+        <div class="modal-box" style="max-width: 600px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(251, 113, 133, 0.1), rgba(244, 63, 94, 0.1));">
+            <h3 style="display: flex; align-items: center; gap: 8px; color: #f43f5e;"><i data-lucide="globe"></i> Çevrimiçi Sınav Sonuçları</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-online-results')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+              <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; background: var(--bg-main);">
+                <thead>
+                  <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Öğrenci</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Sınav Adı</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Net</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Derece (Sınıf / Kurum)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--text-main);">Ahmet Yılmaz</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">TYT Genel Deneme-1</td>
+                    <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">94.25 Net</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">1 / 14</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--text-main);">Elif Demir</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">TYT Genel Deneme-1</td>
+                    <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">88.50 Net</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">1 / 12</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--text-main);">Can Kaya</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">TYT Genel Deneme-1</td>
+                    <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">82.00 Net</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">3 / 14</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--text-main);">Merve Çelik</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">TYT Genel Deneme-1</td>
+                    <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">79.75 Net</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">2 / 12</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-online-results')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. E-INVOICE MODAL -->
+      <div class="modal-overlay" id="modal-e-invoice">
+        <div class="modal-box" style="max-width: 650px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.1), rgba(100, 116, 139, 0.1));">
+            <h3 style="display: flex; align-items: center; gap: 8px; color: #64748b;"><i data-lucide="file-text"></i> E-Fatura İşlemleri</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-e-invoice')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+              <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; background: var(--bg-main);">
+                <thead>
+                  <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Fatura No</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Öğrenci / Alıcı</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Tarih</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Tutar</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Durum</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--text-main);">INV-2026-001</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">Ahmet Yılmaz (Mehmet Yılmaz)</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">04.07.2026</td>
+                    <td style="padding: 8px 12px; color: var(--text-main); font-weight: 700;">5.000,00 TL</td>
+                    <td style="padding: 8px 12px;"><span class="badge badge-success" style="background: #10b98122; color: #10b981; font-size: 10px;">GÖNDERİLDİ</span></td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--text-main);">INV-2026-002</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">Elif Demir (Ayşe Demir)</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">04.07.2026</td>
+                    <td style="padding: 8px 12px; color: var(--text-main); font-weight: 700;">4.500,00 TL</td>
+                    <td style="padding: 8px 12px;"><span class="badge badge-success" style="background: #10b98122; color: #10b981; font-size: 10px;">GÖNDERİLDİ</span></td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--color-border);">
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--text-main);">INV-2026-003</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">Can Kaya (Fatma Kaya)</td>
+                    <td style="padding: 8px 12px; color: var(--text-main);">03.07.2026</td>
+                    <td style="padding: 8px 12px; color: var(--text-main); font-weight: 700;">4.500,00 TL</td>
+                    <td style="padding: 8px 12px;"><span class="badge badge-success" style="background: #10b98122; color: #10b981; font-size: 10px;">GÖNDERİLDİ</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-e-invoice')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. QUICK SMS MODAL -->
+      <div class="modal-overlay" id="modal-quick-sms" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 500px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(253, 224, 71, 0.1));">
+            <h3 style="display: flex; align-items: center; gap: 8px; color: #eab308;"><i data-lucide="mail"></i> Hızlı SMS Gönderimi</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-quick-sms')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form id="form-quick-sms" onsubmit="window.sendQuickSms(event)">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Alıcı Grubu</label>
+                <select id="sms-recipient-group" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                  <option value="all">Tüm Öğrenci ve Veliler</option>
+                  <option value="SAY">Sayısal Grubu</option>
+                  <option value="EA">Eşit Ağırlık Grubu</option>
+                  <option value="SÖZ">Sözel Grubu</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Mesaj İçeriği</label>
+                <textarea id="sms-text-content" rows="4" required placeholder="Sayın Veli, öğrencimizin bugünkü etüt dersine katılım durumu..." oninput="window.updateSmsCharCount()" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; resize: vertical;"></textarea>
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                  <span id="sms-char-counter">0 / 160 Karakter (1 SMS)</span>
+                  <span>SMS Kredi Maliyeti: <strong id="sms-credit-cost">0</strong> Kredi</span>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-quick-sms')" style="padding: 6px 12px; font-size: 11px;">Vazgeç</button>
+                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: #eab308; border: none; color: #000; font-weight: 700;">Gönder (SMS)</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. PERIOD CHANGE MODAL -->
+      <div class="modal-overlay" id="modal-period-change" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 350px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3>Dönem Değiştir</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-period-change')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn btn-secondary" onclick="window.selectPeriod('2025-2026', event)" style="width: 100%; justify-content: flex-start; text-align: left; padding: 10px 14px; font-weight: 700; border-color: var(--color-students);">
+                <i data-lucide="check" style="color: var(--color-students); margin-right: 8px; width: 16px; height: 16px;"></i>
+                2025-2026 Eğitim Öğretim Yılı (Aktif)
+              </button>
+              <button class="btn btn-secondary" onclick="window.selectPeriod('2024-2025', event)" style="width: 100%; justify-content: flex-start; text-align: left; padding: 10px 14px; border-color: var(--color-border);">
+                <i data-lucide="calendar" style="margin-right: 8px; width: 16px; height: 16px;"></i>
+                2024-2025 Eğitim Öğretim Yılı
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. REMINDER MODAL -->
+      <div class="modal-overlay" id="modal-reminder" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 400px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="hourglass" style="color: var(--color-counseling);"></i> Hızlı Hatırlatıcı</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-reminder')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form onsubmit="window.saveReminder(event)">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Hatırlatma Notu</label>
+                <input type="text" id="reminder-note" required placeholder="Veli toplantısını hatırlat..." style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div class="form-group" style="margin-bottom: 16px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Zamanlama</label>
+                <input type="time" id="reminder-time" required value="17:00" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-reminder')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Ekle</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. CLASS LIST PRINT MODAL -->
+      <div class="modal-overlay" id="modal-student-class-list" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 600px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));">
+            <h3 style="display:flex; align-items:center; gap:8px;"><i data-lucide="printer" style="color:var(--color-students);"></i> Sınıf Listesi Yazdırma / Excel</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-student-class-list')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; background: var(--color-input-bg); padding: 12px; border-radius: var(--radius-sm);">
+              <label style="font-size: 12px; font-weight: 700; color: var(--text-main); min-width: 80px;">Sınıf Seçiniz:</label>
+              <select id="print-class-select" onchange="window.updatePrintClassList()" style="padding: 6px 12px; font-size: 12px; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; flex: 1;">
+                <!-- Filled via JS -->
+              </select>
+              <button class="btn btn-primary" onclick="window.printCurrentClassList()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="printer" style="width:12px; height:12px;"></i> Yazdır</button>
+            </div>
+            
+            <div id="print-class-list-container" style="overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); max-height: 300px; overflow-y: auto; background: var(--bg-main);">
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                <thead>
+                  <tr style="background: var(--color-input-bg); border-bottom: 1px solid var(--color-border);">
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main); width: 60px;">Sıra No</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Öğrenci Ad Soyad</th>
+                    <th style="padding: 8px 12px; font-weight: 700; color: var(--text-main);">Sınıfı</th>
+                  </tr>
+                </thead>
+                <tbody id="print-class-table-body">
+                  <!-- Filled via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 12px 24px; background-color: var(--color-input-bg); display: flex; justify-content: flex-end; gap: 8px;">
+            <button type="button" class="btn btn-secondary" onclick="window.exportClassToExcel()" style="padding: 6px 12px; font-size: 11px; color: #10b981; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-spreadsheet" style="width:12px; height:12px;"></i> Excel'e Aktar</button>
+            <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-student-class-list')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. REGISTRATION SETTINGS MODAL -->
+      <div class="modal-overlay" id="modal-student-settings" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 480px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(255, 90, 54, 0.08), rgba(255, 126, 71, 0.08));">
+            <h3><i data-lucide="settings" style="color:var(--color-students);"></i> Kayıt / Öğrenci Ayarları</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-student-settings')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form id="form-student-settings" onsubmit="window.saveStudentSettings(event)">
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                  <input type="checkbox" id="settings-auto-no" checked style="accent-color: var(--color-students);">
+                  Öğrenci Numarası Otomatik Verilsin
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                  <input type="checkbox" id="settings-req-grade" checked style="accent-color: var(--color-students);">
+                  Sınıf Bilgisi Zorunlu Tutulsun
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                  <input type="checkbox" id="settings-req-school" style="accent-color: var(--color-students);">
+                  Okul Bilgisi Zorunlu Tutulsun
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                  <input type="checkbox" id="settings-req-parent" checked style="accent-color: var(--color-students);">
+                  Veli Bilgileri Zorunlu Tutulsun
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                  <input type="checkbox" id="settings-welcome-sms" style="accent-color: var(--color-students);">
+                  Yeni Kayıtta Hoş Geldin SMS'i Atılsın
+                </label>
+                
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px; margin-top: 4px;">
+                  <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">Sonuç / Optik Okuma Modu</span>
+                  <div style="display: flex; gap: 20px;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                      <input type="radio" name="optik-mod" value="online" checked style="accent-color: var(--color-students);"> Online Sonuç
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                      <input type="radio" name="optik-mod" value="olçme" style="accent-color: var(--color-students);"> Ölçme Değerlendirme
+                    </label>
+                  </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--color-border); padding-top: 12px; margin-top: 4px;">
+                  <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Varsayılan Kayıt Sözleşmesi</label>
+                  <select id="settings-contract-template" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <option value="standart">Kurs Merkezi - Standart Sözleşme</option>
+                    <option value="vip">VIP Birebir Eğitim Sözleşmesi</option>
+                    <option value="yaz">Yaz Kampı Katılım Sözleşmesi</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-student-settings')" style="padding: 6px 12px; font-size: 11px;">Vazgeç</button>
+                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Ayarları Kaydet</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. CREATE HOMEWORK MODAL -->
+      <div class="modal-overlay" id="modal-create-homework" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+        <div class="modal-box" style="max-width: 500px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(2, 132, 199, 0.1));">
+            <h3><i data-lucide="file-plus-2"></i> Yeni Ödev Ata / Gönder</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-create-homework')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form id="homework-create-form" onsubmit="window.submitCreateHomework(event)">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Ödev Başlığı</label>
+                <input type="text" id="hw-title-input" placeholder="Ödev adını giriniz..." required style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Ders</label>
+                  <select id="hw-subject-input" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <option value="Matematik">Matematik</option>
+                    <option value="Fizik">Fizik</option>
+                    <option value="Kimya">Kimya</option>
+                    <option value="Biyoloji">Biyoloji</option>
+                    <option value="Türkçe">Türkçe</option>
+                  </select>
+                </div>
+                <div style="flex: 1;">
+                  <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Sınıf</label>
+                  <select id="hw-grade-input" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <option value="10-A (K)">10-A (K)</option>
+                    <option value="27 YAZ 115">27 YAZ 115</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Son Teslim Tarihi</label>
+                <input type="date" id="hw-date-input" required style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div class="form-group" style="margin-bottom: 16px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Ödev Açıklaması</label>
+                <textarea id="hw-description-input" rows="3" placeholder="Ödevin ayrıntılarını buraya yazın..." style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; font-family: inherit; resize: vertical;"></textarea>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-create-homework')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: var(--color-counseling); border: none; color: #fff;">Ödev Ata</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
