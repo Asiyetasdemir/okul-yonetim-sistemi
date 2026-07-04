@@ -35,74 +35,77 @@
           </button>
           
           <div class="nav-separator">ÖĞRENCİ & EĞİTİM</div>
-          <button class="nav-btn" data-view="students">
+          <button class="nav-btn" data-view="students" data-roles="admin,ogretmen">
             <i data-lucide="users"></i>
             <span>Öğrenci İşleri</span>
           </button>
-          <button class="nav-btn" onclick="window.openLegacyModal('modal-pre-reg')">
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-pre-reg')" data-roles="admin">
             <i data-lucide="user-plus"></i>
             <span>Ön Kayıt</span>
           </button>
-          <button class="nav-btn" data-view="attendance">
+          <button class="nav-btn" data-view="attendance" data-roles="admin,ogretmen">
             <i data-lucide="clipboard-check"></i>
             <span>Yoklama İşlemleri</span>
           </button>
-          <button class="nav-btn" data-view="homework">
+          <button class="nav-btn" data-view="homework" data-roles="admin,ogretmen,veli,ogrenci">
             <i data-lucide="book-open"></i>
             <span>Ödev Takip</span>
           </button>
-          <button class="nav-btn" data-view="studies">
+          <button class="nav-btn" data-view="studies" data-roles="admin,ogretmen,veli,ogrenci">
             <i data-lucide="calendar"></i>
             <span>Birebir Etüt</span>
           </button>
-
+          
           <div class="nav-separator">MUHASEBE & PERSONEL</div>
-          <button class="nav-btn" onclick="window.openLegacyModal('modal-accounting')">
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-accounting')" data-roles="admin">
             <i data-lucide="wallet"></i>
             <span>Öğrenci Cari / Kasa</span>
           </button>
-          <button class="nav-btn" data-view="staff">
+          <button class="nav-btn" data-view="staff" data-roles="admin">
             <i data-lucide="briefcase"></i>
             <span>Personel İşleri</span>
           </button>
-
+          
           <div class="nav-separator">AYARLAR & TANIMLAR</div>
-          <button class="nav-btn" data-view="counseling">
+          <button class="nav-btn" data-view="counseling" data-roles="admin,ogretmen">
             <i data-lucide="heart-handshake"></i>
             <span>Rehberlik Servisi</span>
           </button>
-          <button class="nav-btn" data-view="hours">
+          <button class="nav-btn" data-view="hours" data-roles="admin">
             <i data-lucide="clock"></i>
             <span>Ders Saatleri</span>
           </button>
-          <button class="nav-btn" onclick="window.openLegacyModal('modal-bell-schedule')">
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-bell-schedule')" data-roles="admin">
             <i data-lucide="bell-ring"></i>
             <span>Zil Programı</span>
           </button>
-
+          
           <div class="nav-separator">İLETİŞİM & ANALİZ</div>
-          <button class="nav-btn" data-view="announcements">
+          <button class="nav-btn" data-view="announcements" data-roles="admin,ogretmen,veli,ogrenci">
             <i data-lucide="megaphone"></i>
             <span>Genel Duyurular</span>
           </button>
-          <button class="nav-btn" onclick="window.openLegacyModal('modal-quick-sms')">
+          <button class="nav-btn" onclick="window.openLegacyModal('modal-quick-sms')" data-roles="admin,ogretmen">
             <i data-lucide="send"></i>
             <span>Hızlı SMS Gönder</span>
           </button>
-          <button class="nav-btn" data-view="stats">
+          <button class="nav-btn" data-view="stats" data-roles="admin">
             <i data-lucide="bar-chart-3"></i>
             <span>Genel İstatistik</span>
           </button>
         </nav>
 
-        <div class="sidebar-footer">
-          <div class="user-profile">
-            <div class="avatar">SB</div>
-            <div class="user-info">
-              <h4>Seda Bulut</h4>
-              <span>Yönetici (Öğrenci İşleri)</span>
+        <div class="sidebar-footer" style="padding: 16px 20px; border-top: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <div class="user-profile" style="display: flex; align-items: center; gap: 10px;">
+            <div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-students); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">MY</div>
+            <div class="user-info" style="display: flex; flex-direction: column;">
+              <h4 style="margin: 0; font-size: 13px; font-weight: 700; color: var(--text-primary);">Mert Yardımcı</h4>
+              <span style="font-size: 11px; color: var(--text-muted);">Sistem Yöneticisi</span>
             </div>
           </div>
+          <button id="logout-btn" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;" title="Çıkış Yap">
+            <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+          </button>
         </div>
       </aside>
 

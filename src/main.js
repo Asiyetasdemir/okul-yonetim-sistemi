@@ -13,11 +13,14 @@ import {
   mockKazanımlar,
   academicCategories
 } from './data.js';
+import { requireAuth, applyRoleBasedSidebar, logout } from './lib/auth.js';
+import { fetchStudents } from './lib/api/students.js';
+
 
 
 // Application State (Local DB Mock)
 const state = {
-  students: JSON.parse(localStorage.getItem('edu_students')) || [...initialStudents],
+  students: [],
   attendance: { ...initialAttendance },
   announcements: [...initialAnnouncements],
   studies: [...initialStudies],
@@ -218,8 +221,45 @@ let charts = {
 // State variable for selected student drawer
 let activeStudentId = null;
 
+async function loadSupabaseData() {
+  try {
+    const studentsData = await fetchStudents();
+    state.students = studentsData || [];
+  } catch (err) {
+    console.warn('Supabase veri yükleme hatası. Mock veri kullanılıyor:', err);
+    state.students = JSON.parse(localStorage.getItem('edu_students')) || [...initialStudents];
+  }
+}
+
 // DOM Elements & Routing Setup
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Oturum Kontrolü (Giriş yapılmamışsa login.html'e yönlendirir)
+  let profile = null;
+  try {
+    profile = await requireAuth();
+    if (!profile) return; // requireAuth login sayfasına yönlendirir
+  } catch (err) {
+    console.warn('Oturum kontrolü başarısız, çevrimdışı/geliştirici modda devam ediliyor:', err);
+    // Eğer bağlantı hatası varsa veya yerel geliştirme yapılıyorsa geçici admin profili simüle et
+    profile = { role: 'admin', full_name: 'Mert Yardımcı' };
+  }
+
+  // 2. Rol bazlı sidebar menü butonlarının filtrelenmesi
+  applyRoleBasedSidebar(profile.role);
+
+  // 3. Çıkış yap butonu dinleyicisi
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+        await logout();
+      }
+    });
+  }
+
+  // 4. Supabase verilerini yükle (Hata durumunda local mock verilere döner)
+  await loadSupabaseData();
+
   initApp();
   initTheme();
   setupNavigation();
