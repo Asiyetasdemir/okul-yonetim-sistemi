@@ -1,3 +1,4 @@
+// Vercel build trigger with environmental variables configuration
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
