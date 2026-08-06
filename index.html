@@ -294,8 +294,8 @@
                   <div class="dropup-menu" id="menu-status-genel">
                     <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-bell-schedule')">Zamanlayıcı Tanımları</a>
                     <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-bell-schedule')">Ders Saat Tanımları</a>
-                    <a href="javascript:void(0)" onclick="window.showToast('Özelkod Tanımları modülü açıldı.')">Özelkod Tanımları</a>
-                    <a href="javascript:void(0)" onclick="window.showToast('Ders Tanımları modülü açıldı.')">Ders Tanımları</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-custom-codes')">Özelkod Tanımları</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-subjects')">Ders Tanımları</a>
                     <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-categories-grid')">Sınıf Tanımları</a>
                   </div>
                 </div>
@@ -307,11 +307,11 @@
                     Sistem Ayarları
                   </button>
                   <div class="dropup-menu" id="menu-status-sistem">
-                    <a href="javascript:void(0)" onclick="window.showToast('Dönem - Devir İşlemleri açıldı.')">Dönem - Devir İşlemleri</a>
-                    <a href="javascript:void(0)" onclick="window.showToast('Sistem Ayarları açıldı.')">Sistem Ayarları</a>
-                    <a href="javascript:void(0)" onclick="window.showToast('Kurum Tanımı açıldı.')">Kurum Tanımı</a>
-                    <a href="javascript:void(0)" onclick="window.showToast('Sms İzinleri açıldı.')">Sms İzinleri</a>
-                    <a href="javascript:void(0)" onclick="window.showToast('Personel Sınıf / Ders Yetkileri düzenleme açıldı.')">Personel Yetkileri</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-period-transfer')">Dönem - Devir İşlemleri</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-system-settings')">Sistem Ayarları</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-institution')">Kurum Tanımı</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-sms-permissions')">Sms İzinleri</a>
+                    <a href="javascript:void(0)" onclick="window.openLegacyModal('modal-staff-permissions')">Personel Yetkileri</a>
                     <a href="javascript:void(0)" onclick="window.switchTab('staff')">Personel Tanımları</a>
                   </div>
                 </div>
@@ -338,7 +338,7 @@
                   Hatırlatıcı
                 </button>
 
-                <button class="status-btn" onclick="window.showToast('Canlı destek talebi oluşturuluyor...')">
+                <button class="status-btn" onclick="window.openLegacyModal('modal-support-ticket')">
                   <i data-lucide="message-square" style="width: 14px; height: 14px;"></i>
                   Canlı Destek
                 </button>
@@ -1557,7 +1557,7 @@
       </div>
 
       <!-- SIMPLE CATEGORY CREATION MODAL -->
-      <div class="modal-overlay" id="modal-create-category-simple" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-create-category-simple" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 320px; width: 100%; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; color: var(--text-main);">
             <i data-lucide="folder-plus" style="width:16px; height:16px; color: var(--color-students);"></i> Kategori Oluştur
@@ -1576,7 +1576,7 @@
       </div>
 
       <!-- SIMPLE CLASS CREATION MODAL -->
-      <div class="modal-overlay" id="modal-create-class-simple" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-create-class-simple" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 320px; width: 100%; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; color: var(--text-main);">
             <i data-lucide="plus-circle" style="width:16px; height:16px; color: var(--color-students);"></i> Sınıf Oluştur
@@ -1596,7 +1596,7 @@
       </div>
 
       <!-- CLASS STUDENTS LIST MODAL -->
-      <div class="modal-overlay" id="modal-class-students" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-class-students" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 600px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,90,54,0.08),rgba(255,126,71,0.08));">
             <h3 id="class-students-title" style="display:flex; align-items:center; gap:8px;"><i data-lucide="users" style="color:var(--color-students);"></i> Sınıf Öğrenci Listesi</h3>
@@ -1899,7 +1899,7 @@
       </div>
 
       <!-- 3. BELL SCHEDULE MODAL -->
-      <div class="modal-overlay" id="modal-bell-schedule" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-bell-schedule" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 960px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(248, 113, 113, 0.08));">
             <h3 style="display: flex; align-items: center; gap: 8px; color: #ef4444;"><i data-lucide="bell"></i> Zil İşlemleri & Ders Saatleri Kontrol Merkezi</h3>
@@ -2155,7 +2155,7 @@
       </div>
 
       <!-- 6. QUICK SMS MODAL -->
-      <div class="modal-overlay" id="modal-quick-sms" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-quick-sms" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 500px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header" style="background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(253, 224, 71, 0.1));">
             <h3 style="display: flex; align-items: center; gap: 8px; color: #eab308;"><i data-lucide="mail"></i> Hızlı SMS Gönderimi</h3>
@@ -2190,7 +2190,7 @@
       </div>
 
       <!-- 7. PERIOD CHANGE MODAL -->
-      <div class="modal-overlay" id="modal-period-change" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-period-change" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 350px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header">
             <h3>Dönem Değiştir</h3>
@@ -2212,7 +2212,7 @@
       </div>
 
       <!-- 8. REMINDER MODAL -->
-      <div class="modal-overlay" id="modal-reminder" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-reminder" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 400px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header">
             <h3><i data-lucide="hourglass" style="color: var(--color-counseling);"></i> Hızlı Hatırlatıcı</h3>
@@ -2238,7 +2238,193 @@
       </div>
 
       <!-- 9. CLASS LIST PRINT MODAL -->
-      <div class="modal-overlay" id="modal-student-class-list" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-institution" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 420px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="building-2" style="color: var(--color-students);"></i> Kurum Tanımı</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-institution')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form id="institution-form" onsubmit="window.saveInstitution(event)">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Kurum Adı</label>
+                <input type="text" id="inst-name" required placeholder="EduMercek Eğitim Kurumları" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Adres</label>
+                <input type="text" id="inst-address" placeholder="Adres giriniz" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div style="display:flex; gap:8px;">
+                <div class="form-group" style="margin-bottom: 12px; flex:1;">
+                  <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Telefon</label>
+                  <input type="text" id="inst-phone" placeholder="0212 000 00 00" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px; flex:1;">
+                  <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">E-Posta</label>
+                  <input type="email" id="inst-email" placeholder="info@kurum.com" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-institution')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Kaydet</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="modal-system-settings" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 420px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="settings" style="color: var(--color-students);"></i> Sistem Ayarları</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-system-settings')">&times;</button>
+          </div>
+          <div style="padding: 20px; display:flex; flex-direction:column; gap:14px;">
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Bildirim Sesleri
+              <input type="checkbox" id="sys-setting-sounds" style="width:16px; height:16px;">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Otomatik Yedekleme (günlük)
+              <input type="checkbox" id="sys-setting-backup" style="width:16px; height:16px;">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Veli Portalı Erişimi Açık
+              <input type="checkbox" id="sys-setting-parent-portal" style="width:16px; height:16px;">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Düşük Devamsızlıkta Otomatik SMS
+              <input type="checkbox" id="sys-setting-auto-sms" style="width:16px; height:16px;">
+            </label>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px;">
+              <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-system-settings')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+              <button type="button" class="btn btn-primary" onclick="window.saveSystemSettings()" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Kaydet</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="modal-subjects" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 420px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="book-open" style="color: var(--color-students);"></i> Ders Tanımları</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-subjects')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form onsubmit="window.addSubject(event)" style="display:flex; gap:8px; margin-bottom:14px;">
+              <input type="text" id="new-subject-name" required placeholder="Ders adı (örn. Matematik)" style="flex:1; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Ekle</button>
+            </form>
+            <div id="subjects-list-container" style="display:flex; flex-direction:column; gap:6px; max-height:260px; overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="modal-custom-codes" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 460px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="tag" style="color: var(--color-students);"></i> Özelkod Tanımları</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-custom-codes')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form onsubmit="window.addCustomCode(event)" style="display:flex; gap:8px; margin-bottom:14px;">
+              <input type="text" id="new-code-name" required placeholder="Kod adı (örn. Sağlık Raporu)" style="flex:1; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              <input type="text" id="new-code-short" required maxlength="4" placeholder="Kısa" style="width:70px; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Ekle</button>
+            </form>
+            <div id="custom-codes-list-container" style="display:flex; flex-direction:column; gap:6px; max-height:260px; overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="modal-sms-permissions" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 420px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="message-circle" style="color: var(--color-students);"></i> SMS İzinleri</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-sms-permissions')">&times;</button>
+          </div>
+          <div style="padding: 20px; display:flex; flex-direction:column; gap:14px;">
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Yoklama Bildirimleri
+              <input type="checkbox" id="sms-perm-attendance" style="width:16px; height:16px;">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Ödev Bildirimleri
+              <input type="checkbox" id="sms-perm-homework" style="width:16px; height:16px;">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Genel Duyurular
+              <input type="checkbox" id="sms-perm-announcements" style="width:16px; height:16px;">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-main); cursor:pointer;">
+              Ödeme / Taksit Hatırlatmaları
+              <input type="checkbox" id="sms-perm-finance" style="width:16px; height:16px;">
+            </label>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px;">
+              <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-sms-permissions')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+              <button type="button" class="btn btn-primary" onclick="window.saveSmsPermissions()" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Kaydet</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="modal-staff-permissions" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 520px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="shield" style="color: var(--color-students);"></i> Personel Yetkileri</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-staff-permissions')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div id="staff-permissions-list-container" style="display:flex; flex-direction:column; gap:10px; max-height:340px; overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="modal-period-transfer" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 420px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="repeat" style="color: var(--color-students);"></i> Dönem - Devir İşlemleri</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-period-transfer')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
+              Dönem devri, mevcut dönemin yoklama/ödev/etüt kayıtlarını arşivler ve yeni döneme sıfırdan başlar. Öğrenci ve finans kayıtları korunur.
+            </p>
+            <div id="period-transfer-current" style="font-size:12px; font-weight:700; margin-bottom:14px; color:var(--color-students);"></div>
+            <button type="button" class="btn btn-primary" onclick="window.runPeriodTransfer()" style="width:100%; padding: 10px; font-size: 12px; background: var(--color-students); border: none; color: #fff; justify-content:center;">
+              <i data-lucide="repeat" style="width:14px;height:14px;"></i> Dönemi Kapat ve Yeni Döneme Geç
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="modal-support-ticket" style="z-index: 1100; align-items: center; justify-content: center; ">
+        <div class="modal-box" style="max-width: 400px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+          <div class="modal-header">
+            <h3><i data-lucide="message-square" style="color: var(--color-students);"></i> Canlı Destek Talebi</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-support-ticket')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <form onsubmit="window.submitSupportTicket(event)">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Konu</label>
+                <input type="text" id="support-subject" required placeholder="Kısaca konu belirtin" style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              <div class="form-group" style="margin-bottom: 16px;">
+                <label style="font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-muted);">Mesajınız</label>
+                <textarea id="support-message" required rows="3" placeholder="Sorununuzu açıklayın..." style="width: 100%; padding: 8px 12px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; resize: vertical;"></textarea>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-support-ticket')" style="padding: 6px 12px; font-size: 11px;">Kapat</button>
+                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Gönder</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. CLASS LIST PRINT MODAL -->
+      <div class="modal-overlay" id="modal-student-class-list" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 600px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));">
             <h3 style="display:flex; align-items:center; gap:8px;"><i data-lucide="printer" style="color:var(--color-students);"></i> Sınıf Listesi Yazdırma / Excel</h3>
@@ -2276,7 +2462,7 @@
       </div>
 
       <!-- 10. REGISTRATION SETTINGS MODAL -->
-      <div class="modal-overlay" id="modal-student-settings" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-student-settings" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 480px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header" style="background: linear-gradient(135deg, rgba(255, 90, 54, 0.08), rgba(255, 126, 71, 0.08));">
             <h3><i data-lucide="settings" style="color:var(--color-students);"></i> Kayıt / Öğrenci Ayarları</h3>
@@ -2337,7 +2523,7 @@
       </div>
 
       <!-- 11. CREATE HOMEWORK MODAL -->
-      <div class="modal-overlay" id="modal-create-homework" style="z-index: 1100; align-items: center; justify-content: center; display: none;">
+      <div class="modal-overlay" id="modal-create-homework" style="z-index: 1100; align-items: center; justify-content: center; ">
         <div class="modal-box" style="max-width: 500px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
           <div class="modal-header" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(2, 132, 199, 0.1));">
             <h3><i data-lucide="file-plus-2"></i> Yeni Ödev Ata / Gönder</h3>

@@ -1,9 +1,10 @@
-import { supabase } from '../supabaseClient.js';
+import { supabase, isSupabaseConfigured } from '../supabaseClient.js';
 
 /** Tüm öğrencileri (ilişkili veli/finans bilgisiyle) getirir.
  *  RLS sayesinde admin/öğretmen hepsini, veli sadece kendi çocuğunu,
  *  öğrenci sadece kendi profilini görür — ekstra filtre yazmaya gerek yok. */
 export async function fetchStudents() {
+  if (!isSupabaseConfigured) throw new Error('Supabase yapılandırılmamış.');
   const { data, error } = await supabase
     .from('students')
     .select(`
@@ -25,6 +26,7 @@ export async function fetchStudents() {
 }
 
 export async function fetchStudentById(studentId) {
+  if (!isSupabaseConfigured) throw new Error('Supabase yapılandırılmamış.');
   const { data, error } = await supabase
     .from('students')
     .select(`*, parents (*), student_finance (*), installments (*), payments (*), exams (*), behavior_logs (*)`)
@@ -36,12 +38,14 @@ export async function fetchStudentById(studentId) {
 }
 
 export async function addStudent(student) {
+  if (!isSupabaseConfigured) throw new Error('Supabase yapılandırılmamış.');
   const { data, error } = await supabase.from('students').insert(student).select().single();
   if (error) throw error;
   return data;
 }
 
 export async function updateStudent(studentId, updates) {
+  if (!isSupabaseConfigured) throw new Error('Supabase yapılandırılmamış.');
   const { data, error } = await supabase
     .from('students')
     .update(updates)
@@ -53,6 +57,7 @@ export async function updateStudent(studentId, updates) {
 }
 
 export async function addBehaviorLog(studentId, log) {
+  if (!isSupabaseConfigured) throw new Error('Supabase yapılandırılmamış.');
   const { data, error } = await supabase
     .from('behavior_logs')
     .insert({ student_id: studentId, ...log })

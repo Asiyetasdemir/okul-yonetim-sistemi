@@ -51,7 +51,31 @@ const state = {
   sortColumn: null,
   sortDirection: null,
   editingStudentId: null,
-  selectedClassFilter: null
+  selectedClassFilter: null,
+  institution: JSON.parse(localStorage.getItem('edu_institution')) || {
+    name: 'EduMercek Eğitim Kurumları', address: '', phone: '', email: ''
+  },
+  systemSettings: JSON.parse(localStorage.getItem('edu_system_settings')) || {
+    sounds: true, backup: true, parentPortal: true, autoSms: false
+  },
+  subjects: JSON.parse(localStorage.getItem('edu_subjects')) || [
+    { id: 'sub-1', name: 'Matematik' },
+    { id: 'sub-2', name: 'Türkçe' },
+    { id: 'sub-3', name: 'Fen Bilimleri' },
+    { id: 'sub-4', name: 'Sosyal Bilgiler' },
+    { id: 'sub-5', name: 'İngilizce' }
+  ],
+  customCodes: JSON.parse(localStorage.getItem('edu_custom_codes')) || [
+    { id: 'code-1', name: 'Sağlık Raporu', short: 'RPR' },
+    { id: 'code-2', name: 'Veli İzni', short: 'Vİ' },
+    { id: 'code-3', name: 'Okul Etkinliği', short: 'ETK' }
+  ],
+  smsPermissions: JSON.parse(localStorage.getItem('edu_sms_permissions')) || {
+    attendance: true, homework: true, announcements: true, finance: true
+  },
+  staffPermissions: JSON.parse(localStorage.getItem('edu_staff_permissions')) || {},
+  currentPeriod: localStorage.getItem('edu_current_period') || '2025-2026',
+  supportTickets: JSON.parse(localStorage.getItem('edu_support_tickets')) || []
 };
 
 // Dynamic Category and Filter Helpers
@@ -2579,6 +2603,57 @@ function showToast(message) {
     }, 300);
   }, 3500);
 }
+window.showToast = showToast; // index.html içindeki onclick="showToast(...)" çağrıları için global erişim
+
+// ----------------------------------------------------
+// EXCEL DIŞA AKTARMA (Yoklama / Ödev)
+// ----------------------------------------------------
+function exportRowsToCsv(filename, headers, rows) {
+  const escapeCell = (val) => {
+    const str = String(val ?? '');
+    return /[",\n;]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+  };
+  const lines = [headers.map(escapeCell).join(';'), ...rows.map(row => row.map(escapeCell).join(';'))];
+  const csvContent = '\uFEFF' + lines.join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+}
+
+function exportAttendanceToExcel() {
+  const rows = state.students.map(s => {
+    const status = state.attendance?.[s.id] || 'Belirtilmedi';
+    return [s.id, s.name, s.grade, status];
+  });
+  if (rows.length === 0) {
+    showToast('Dışa aktarılacak yoklama kaydı bulunamadı.', 'error');
+    return;
+  }
+  exportRowsToCsv(`yoklama-${new Date().toISOString().split('T')[0]}.csv`, ['Öğrenci No', 'Ad Soyad', 'Sınıf', 'Durum'], rows);
+  showToast('Yoklama listesi Excel (CSV) olarak indirildi.');
+}
+window.exportAttendanceToExcel = exportAttendanceToExcel;
+
+function exportHomeworkToExcel() {
+  const rows = (state.homeworks || []).map(h => [
+    h.student || h.studentId || '—',
+    h.title || h.subject || '—',
+    h.dueDate || h.due_date || '—',
+    h.status || 'Bekliyor'
+  ]);
+  if (rows.length === 0) {
+    showToast('Dışa aktarılacak ödev kaydı bulunamadı.', 'error');
+    return;
+  }
+  exportRowsToCsv(`odevler-${new Date().toISOString().split('T')[0]}.csv`, ['Öğrenci', 'Ödev', 'Teslim Tarihi', 'Durum'], rows);
+  showToast('Ödev listesi Excel (CSV) olarak indirildi.');
+}
+window.exportHomeworkToExcel = exportHomeworkToExcel;
 
 // ----------------------------------------------------
 // GROUP & CLASS MANAGEMENT LOGIC
@@ -3263,6 +3338,295 @@ window.openLegacyModal = (modalId) => {
 window.closeLegacyModal = (modalId) => {
   const modal = document.getElementById(modalId);
   if (modal) modal.classList.remove('active');
+};
+
+// ----------------------------------------------------
+// KURUM TANIMI
+// ----------------------------------------------------
+function fillInstitutionForm() {
+  const n = document.getElementById('inst-name');
+  const a = document.getElementById('inst-address');
+  const p = document.getElementById('inst-phone');
+  const e = document.getElementById('inst-email');
+  if (n) n.value = state.institution.name || '';
+  if (a) a.value = state.institution.address || '';
+  if (p) p.value = state.institution.phone || '';
+  if (e) e.value = state.institution.email || '';
+}
+
+window.saveInstitution = (evt) => {
+  evt.preventDefault();
+  state.institution = {
+    name: document.getElementById('inst-name').value.trim() || 'EduMercek Eğitim Kurumları',
+    address: document.getElementById('inst-address').value.trim(),
+    phone: document.getElementById('inst-phone').value.trim(),
+    email: document.getElementById('inst-email').value.trim()
+  };
+  localStorage.setItem('edu_institution', JSON.stringify(state.institution));
+  document.title = `${state.institution.name} | Okul ve Etüt Yönetim Sistemi`;
+  showToast('Kurum bilgileri kaydedildi.');
+  window.closeLegacyModal('modal-institution');
+};
+
+// ----------------------------------------------------
+// SİSTEM AYARLARI
+// ----------------------------------------------------
+function fillSystemSettingsForm() {
+  document.getElementById('sys-setting-sounds').checked = !!state.systemSettings.sounds;
+  document.getElementById('sys-setting-backup').checked = !!state.systemSettings.backup;
+  document.getElementById('sys-setting-parent-portal').checked = !!state.systemSettings.parentPortal;
+  document.getElementById('sys-setting-auto-sms').checked = !!state.systemSettings.autoSms;
+}
+
+window.saveSystemSettings = () => {
+  state.systemSettings = {
+    sounds: document.getElementById('sys-setting-sounds').checked,
+    backup: document.getElementById('sys-setting-backup').checked,
+    parentPortal: document.getElementById('sys-setting-parent-portal').checked,
+    autoSms: document.getElementById('sys-setting-auto-sms').checked
+  };
+  localStorage.setItem('edu_system_settings', JSON.stringify(state.systemSettings));
+  showToast('Sistem ayarları kaydedildi.');
+  window.closeLegacyModal('modal-system-settings');
+};
+
+// ----------------------------------------------------
+// DERS TANIMLARI
+// ----------------------------------------------------
+function renderSubjectsList() {
+  const container = document.getElementById('subjects-list-container');
+  if (!container) return;
+  if (state.subjects.length === 0) {
+    container.innerHTML = `<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:12px 0;">Henüz ders eklenmedi.</p>`;
+    return;
+  }
+  container.innerHTML = state.subjects.map(sub => `
+    <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-main); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--color-border);">
+      <span style="font-size:12px; color:var(--text-main); font-weight:600;">${sub.name}</span>
+      <button onclick="window.deleteSubject('${sub.id}')" style="background:none; border:none; cursor:pointer; color:#ef4444;" title="Sil">
+        <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
+      </button>
+    </div>
+  `).join('');
+  if (window.lucide) window.lucide.createIcons();
+}
+
+window.addSubject = (evt) => {
+  evt.preventDefault();
+  const input = document.getElementById('new-subject-name');
+  const name = input.value.trim();
+  if (!name) return;
+  if (state.subjects.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+    showToast('Bu ders zaten tanımlı.', 'error');
+    return;
+  }
+  state.subjects.push({ id: 'sub-' + Date.now(), name });
+  localStorage.setItem('edu_subjects', JSON.stringify(state.subjects));
+  input.value = '';
+  renderSubjectsList();
+  showToast(`"${name}" dersi eklendi.`);
+};
+
+window.deleteSubject = (id) => {
+  state.subjects = state.subjects.filter(s => s.id !== id);
+  localStorage.setItem('edu_subjects', JSON.stringify(state.subjects));
+  renderSubjectsList();
+  showToast('Ders silindi.');
+};
+
+// ----------------------------------------------------
+// ÖZELKOD TANIMLARI
+// ----------------------------------------------------
+function renderCustomCodesList() {
+  const container = document.getElementById('custom-codes-list-container');
+  if (!container) return;
+  if (state.customCodes.length === 0) {
+    container.innerHTML = `<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:12px 0;">Henüz özelkod eklenmedi.</p>`;
+    return;
+  }
+  container.innerHTML = state.customCodes.map(c => `
+    <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-main); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--color-border);">
+      <span style="font-size:12px; color:var(--text-main);"><b style="color:var(--color-students);">${c.short}</b> — ${c.name}</span>
+      <button onclick="window.deleteCustomCode('${c.id}')" style="background:none; border:none; cursor:pointer; color:#ef4444;" title="Sil">
+        <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
+      </button>
+    </div>
+  `).join('');
+  if (window.lucide) window.lucide.createIcons();
+}
+
+window.addCustomCode = (evt) => {
+  evt.preventDefault();
+  const nameInput = document.getElementById('new-code-name');
+  const shortInput = document.getElementById('new-code-short');
+  const name = nameInput.value.trim();
+  const short = shortInput.value.trim().toUpperCase();
+  if (!name || !short) return;
+  state.customCodes.push({ id: 'code-' + Date.now(), name, short });
+  localStorage.setItem('edu_custom_codes', JSON.stringify(state.customCodes));
+  nameInput.value = '';
+  shortInput.value = '';
+  renderCustomCodesList();
+  showToast(`"${name}" özelkodu eklendi.`);
+};
+
+window.deleteCustomCode = (id) => {
+  state.customCodes = state.customCodes.filter(c => c.id !== id);
+  localStorage.setItem('edu_custom_codes', JSON.stringify(state.customCodes));
+  renderCustomCodesList();
+  showToast('Özelkod silindi.');
+};
+
+// ----------------------------------------------------
+// SMS İZİNLERİ
+// ----------------------------------------------------
+function fillSmsPermissionsForm() {
+  document.getElementById('sms-perm-attendance').checked = !!state.smsPermissions.attendance;
+  document.getElementById('sms-perm-homework').checked = !!state.smsPermissions.homework;
+  document.getElementById('sms-perm-announcements').checked = !!state.smsPermissions.announcements;
+  document.getElementById('sms-perm-finance').checked = !!state.smsPermissions.finance;
+}
+
+window.saveSmsPermissions = () => {
+  state.smsPermissions = {
+    attendance: document.getElementById('sms-perm-attendance').checked,
+    homework: document.getElementById('sms-perm-homework').checked,
+    announcements: document.getElementById('sms-perm-announcements').checked,
+    finance: document.getElementById('sms-perm-finance').checked
+  };
+  localStorage.setItem('edu_sms_permissions', JSON.stringify(state.smsPermissions));
+  showToast('SMS izinleri güncellendi.');
+  window.closeLegacyModal('modal-sms-permissions');
+};
+
+// ----------------------------------------------------
+// PERSONEL YETKİLERİ
+// ----------------------------------------------------
+const PERMISSION_SCOPES = [
+  { key: 'students', label: 'Öğrenci Görüntüleme/Düzenleme' },
+  { key: 'finance', label: 'Muhasebe/Finans' },
+  { key: 'announcements', label: 'Duyuru Yayınlama' },
+  { key: 'reports', label: 'Rapor ve İstatistikler' }
+];
+
+function renderStaffPermissionsList() {
+  const container = document.getElementById('staff-permissions-list-container');
+  if (!container) return;
+  const staffList = state.staff || [];
+  if (staffList.length === 0) {
+    container.innerHTML = `<p style="color:var(--text-muted);font-size:12px;text-align:center;padding:12px 0;">Kayıtlı personel bulunmuyor.</p>`;
+    return;
+  }
+  container.innerHTML = staffList.map(person => {
+    const staffId = person.id || person.name;
+    const current = state.staffPermissions[staffId] || {};
+    return `
+      <div style="background:var(--bg-main); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--color-border);">
+        <div style="font-size:12px; font-weight:700; color:var(--text-main); margin-bottom:8px;">${person.name} <span style="color:var(--text-muted); font-weight:400;">(${person.role || 'Personel'})</span></div>
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+          ${PERMISSION_SCOPES.map(scope => `
+            <label style="display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-muted); cursor:pointer;">
+              <input type="checkbox" data-staff="${staffId}" data-scope="${scope.key}" class="staff-perm-checkbox" ${current[scope.key] ? 'checked' : ''} style="width:13px;height:13px;">
+              ${scope.label}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.staff-perm-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const staffId = cb.dataset.staff;
+      const scope = cb.dataset.scope;
+      if (!state.staffPermissions[staffId]) state.staffPermissions[staffId] = {};
+      state.staffPermissions[staffId][scope] = cb.checked;
+      localStorage.setItem('edu_staff_permissions', JSON.stringify(state.staffPermissions));
+      showToast('Personel yetkisi güncellendi.');
+    });
+  });
+}
+
+// ----------------------------------------------------
+// DÖNEM - DEVİR İŞLEMLERİ
+// ----------------------------------------------------
+function fillPeriodTransferInfo() {
+  const el = document.getElementById('period-transfer-current');
+  if (el) el.innerText = `Aktif Dönem: ${state.currentPeriod}`;
+}
+
+window.runPeriodTransfer = () => {
+  const confirmed = confirm(
+    `${state.currentPeriod} dönemi kapatılıp arşivlenecek ve yoklama/ödev/etüt kayıtları sıfırlanacak.\nÖğrenci ve finans kayıtları korunacaktır. Devam edilsin mi?`
+  );
+  if (!confirmed) return;
+
+  // Mevcut dönemi arşivle
+  const archiveKey = `edu_archive_${state.currentPeriod}`;
+  localStorage.setItem(archiveKey, JSON.stringify({
+    attendanceLogs: state.attendanceLogs || [],
+    homeworkLogs: state.homeworkLogs || [],
+    studySessions: state.studySessions || [],
+    archivedAt: new Date().toISOString()
+  }));
+
+  // Yeni dönemi belirle
+  const [startYear] = state.currentPeriod.split('-').map(Number);
+  const newPeriod = `${startYear + 1}-${startYear + 2}`;
+  state.currentPeriod = newPeriod;
+  localStorage.setItem('edu_current_period', newPeriod);
+
+  // Dönemsel kayıtları sıfırla (öğrenci/finans kayıtları KORUNUR)
+  state.attendanceLogs = [];
+  state.homeworkLogs = [];
+  state.studySessions = [];
+  localStorage.setItem('edu_attendance_logs', JSON.stringify([]));
+  localStorage.setItem('edu_homework_logs', JSON.stringify([]));
+  localStorage.setItem('edu_study_sessions', JSON.stringify([]));
+
+  fillPeriodTransferInfo();
+  showToast(`Dönem devri tamamlandı. Yeni aktif dönem: ${newPeriod}`);
+  window.closeLegacyModal('modal-period-transfer');
+  renderAll();
+};
+
+// ----------------------------------------------------
+// CANLI DESTEK (TALEP FORMU)
+// ----------------------------------------------------
+window.submitSupportTicket = (evt) => {
+  evt.preventDefault();
+  const subject = document.getElementById('support-subject').value.trim();
+  const message = document.getElementById('support-message').value.trim();
+  if (!subject || !message) return;
+
+  state.supportTickets.push({
+    id: 'ticket-' + Date.now(),
+    subject,
+    message,
+    createdAt: new Date().toISOString(),
+    status: 'Açık'
+  });
+  localStorage.setItem('edu_support_tickets', JSON.stringify(state.supportTickets));
+
+  document.getElementById('support-subject').value = '';
+  document.getElementById('support-message').value = '';
+  showToast('Destek talebiniz alındı, ekibimiz en kısa sürede dönüş yapacak.');
+  window.closeLegacyModal('modal-support-ticket');
+};
+
+// Yeni panellerin açılışında ilgili formu/listesini dolduran genel hook.
+// openLegacyModal zaten modalı açıyor; burada içerik dolduruluyor.
+const _originalOpenLegacyModal = window.openLegacyModal;
+window.openLegacyModal = (modalId) => {
+  _originalOpenLegacyModal(modalId);
+  if (modalId === 'modal-institution') fillInstitutionForm();
+  if (modalId === 'modal-system-settings') fillSystemSettingsForm();
+  if (modalId === 'modal-subjects') renderSubjectsList();
+  if (modalId === 'modal-custom-codes') renderCustomCodesList();
+  if (modalId === 'modal-sms-permissions') fillSmsPermissionsForm();
+  if (modalId === 'modal-staff-permissions') renderStaffPermissionsList();
+  if (modalId === 'modal-period-transfer') fillPeriodTransferInfo();
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.submitPreReg = (e) => {

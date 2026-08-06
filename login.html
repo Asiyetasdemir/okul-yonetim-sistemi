@@ -252,6 +252,17 @@
           <span id="error-message">Hata oluştu.</span>
         </div>
 
+        <div id="demo-alert" class="alert" style="display:none; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color:#93c5fd; flex-direction:column; align-items:flex-start;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:4px;">
+            <i data-lucide="info" style="width:16px;height:16px;flex-shrink:0;"></i>
+            Demo Modu Aktif
+          </div>
+          <div style="font-size:12px; line-height:1.5; color:#bfdbfe;">
+            Henüz Supabase bağlanmadı, veriler yerel/örnek verilerle çalışıyor. Herhangi bir şifreyle giriş yapabilirsiniz. Rolü test etmek için e-postaya şu kelimelerden birini ekleyin:<br>
+            <code>admin@test.com</code> · <code>ogretmen@test.com</code> · <code>veli@test.com</code> · <code>ogrenci@test.com</code>
+          </div>
+        </div>
+
         <form id="login-form" style="display: flex; flex-direction: column; gap: 20px;">
           <div class="form-group">
             <label class="form-label" for="email">E-Posta Adresi</label>
@@ -279,10 +290,16 @@
 
     <script type="module">
       import { login } from './src/lib/auth.js';
+      import { isSupabaseConfigured } from './src/lib/supabaseClient.js';
 
-      // Initialize lucide icons
       if (window.lucide) {
         window.lucide.createIcons();
+      }
+
+      if (!isSupabaseConfigured) {
+        const demoAlert = document.getElementById('demo-alert');
+        demoAlert.style.display = 'flex';
+        if (window.lucide) window.lucide.createIcons();
       }
 
       const loginForm = document.getElementById('login-form');
