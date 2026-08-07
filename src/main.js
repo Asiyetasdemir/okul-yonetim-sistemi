@@ -22,13 +22,13 @@ import { fetchStudents } from './lib/api/students.js';
 const state = {
   students: [],
   attendance: { ...initialAttendance },
-  announcements: [...initialAnnouncements],
+  announcements: JSON.parse(localStorage.getItem('edu_announcements')) || [...initialAnnouncements],
   studies: [...initialStudies],
-  counseling: [...initialCounseling],
+  counseling: JSON.parse(localStorage.getItem('edu_counseling')) || [...initialCounseling],
   homeworks: [...initialHomework],
-  staff: [...initialStaff],
+  staff: JSON.parse(localStorage.getItem('edu_staff')) || [...initialStaff],
   schedule: { ...weeklySchedule },
-  smsLogs: [...initialSmsLogs],
+  smsLogs: JSON.parse(localStorage.getItem('edu_sms_logs')) || [...initialSmsLogs],
   questionBank: [...initialQuestionBank],
   categories: JSON.parse(localStorage.getItem('edu_categories')) || [
     { id: 'sayisal', name: 'Sayısal', code: 'SAY', color: 'var(--color-students)' },
@@ -75,7 +75,8 @@ const state = {
   },
   staffPermissions: JSON.parse(localStorage.getItem('edu_staff_permissions')) || {},
   currentPeriod: localStorage.getItem('edu_current_period') || '2025-2026',
-  supportTickets: JSON.parse(localStorage.getItem('edu_support_tickets')) || []
+  supportTickets: JSON.parse(localStorage.getItem('edu_support_tickets')) || [],
+  preRegistrations: JSON.parse(localStorage.getItem('edu_pre_registrations')) || []
 };
 
 // Dynamic Category and Filter Helpers
@@ -270,6 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 2. Rol bazlı sidebar menü butonlarının filtrelenmesi
   applyRoleBasedSidebar(profile.role);
+  window.__currentProfile = profile;
 
   // 3. Çıkış yap butonu dinleyicisi
   const logoutBtn = document.getElementById('logout-btn');
@@ -1185,6 +1187,7 @@ function setupFormSubmissions() {
       };
 
       state.counseling.push(newRecord);
+      localStorage.setItem('edu_counseling', JSON.stringify(state.counseling));
       document.getElementById('modal-counseling').classList.remove('active');
       counselingForm.reset();
 
@@ -1214,6 +1217,7 @@ function setupFormSubmissions() {
       };
 
       state.staff.push(newStaff);
+      localStorage.setItem('edu_staff', JSON.stringify(state.staff));
       document.getElementById('modal-staff').classList.remove('active');
       staffForm.reset();
 
@@ -1242,6 +1246,7 @@ function setupFormSubmissions() {
       };
 
       state.announcements.unshift(newAnn); // Add to beginning of feed
+      localStorage.setItem('edu_announcements', JSON.stringify(state.announcements));
       annForm.reset();
 
       renderAll();
@@ -1584,6 +1589,7 @@ window.sendAbsentSms = (studentId) => {
   };
 
   state.smsLogs.unshift(newLog); // Prepend
+  localStorage.setItem('edu_sms_logs', JSON.stringify(state.smsLogs));
   renderSmsLogs();
   
   // Disable SMS button visually in Yoklama table
@@ -3626,6 +3632,8 @@ window.openLegacyModal = (modalId) => {
   if (modalId === 'modal-sms-permissions') fillSmsPermissionsForm();
   if (modalId === 'modal-staff-permissions') renderStaffPermissionsList();
   if (modalId === 'modal-period-transfer') fillPeriodTransferInfo();
+  if (modalId === 'modal-pre-reg') renderPreRegList();
+  if (modalId === 'modal-create-homework') populateHomeworkGradeDropdown();
   if (window.lucide) window.lucide.createIcons();
 };
 
@@ -3636,25 +3644,86 @@ window.submitPreReg = (e) => {
   const parent = document.getElementById('pre-reg-parent');
   const grade = document.getElementById('pre-reg-grade');
   const notes = document.getElementById('pre-reg-notes');
-  
+
   if (!name || !phone || !parent) return;
-  
-  showToast(`"${name.value}" ön kayıt başvurusu başarıyla kaydedildi!`);
-  window.closeLegacyModal('modal-pre-reg');
-  
-  console.log('Ön Kayıt Girişi:', {
-    name: name.value,
-    phone: phone.value,
-    parent: parent.value,
+  if (!name.value.trim() || !parent.value.trim()) {
+    showToast('Lütfen zorunlu alanları doldurun.', 'error');
+    return;
+  }
+
+  state.preRegistrations.unshift({
+    id: 'preReg-' + Date.now(),
+    name: name.value.trim(),
+    phone: phone.value.trim(),
+    parent: parent.value.trim(),
     grade: grade ? grade.value : '',
-    notes: notes ? notes.value : '',
+    notes: notes ? notes.value.trim() : '',
     date: new Date().toLocaleDateString('tr-TR')
   });
+  localStorage.setItem('edu_pre_registrations', JSON.stringify(state.preRegistrations));
+
+  showToast(`"${name.value}" ön kayıt başvurusu başarıyla kaydedildi!`);
 
   name.value = '';
   phone.value = '';
   parent.value = '';
   if (notes) notes.value = '';
+
+  renderPreRegList();
+};
+
+function renderPreRegList() {
+  const container = document.getElementById('pre-reg-list-container');
+  if (!container) return;
+
+  if (state.preRegistrations.length === 0) {
+    container.innerHTML = `<p style="color:var(--text-muted); font-size:12px; text-align:center; padding:14px 0;">Henüz ön kayıt başvurusu yok.</p>`;
+    return;
+  }
+
+  container.innerHTML = state.preRegistrations.map(p => `
+    <div style="background:var(--bg-main); border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+      <div style="min-width:0;">
+        <div style="font-size:12px; font-weight:700; color:var(--text-main);">${p.name} <span style="font-weight:400; color:var(--text-muted);">(${p.grade || '—'})</span></div>
+        <div style="font-size:11px; color:var(--text-muted);">Veli: ${p.parent} · ${p.phone || 'Tel yok'} · ${p.date}</div>
+        ${p.notes ? `<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">"${p.notes}"</div>` : ''}
+      </div>
+      <div style="display:flex; gap:6px; flex-shrink:0;">
+        <button onclick="window.convertPreRegToStudent('${p.id}')" title="Öğrenciye Dönüştür" style="background:none; border:1px solid var(--color-students); color:var(--color-students); border-radius:6px; padding:4px 8px; font-size:10px; cursor:pointer; display:flex; align-items:center; gap:4px;">
+          <i data-lucide="user-check" style="width:12px;height:12px;"></i> Kaydı Tamamla
+        </button>
+        <button onclick="window.deletePreReg('${p.id}')" title="Sil" style="background:none; border:none; cursor:pointer; color:#ef4444;">
+          <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  if (window.lucide) window.lucide.createIcons();
+}
+
+window.deletePreReg = (id) => {
+  state.preRegistrations = state.preRegistrations.filter(p => p.id !== id);
+  localStorage.setItem('edu_pre_registrations', JSON.stringify(state.preRegistrations));
+  renderPreRegList();
+  showToast('Ön kayıt silindi.');
+};
+
+window.convertPreRegToStudent = (id) => {
+  const preReg = state.preRegistrations.find(p => p.id === id);
+  if (!preReg) return;
+
+  window.closeLegacyModal('modal-pre-reg');
+  const addBtn = document.getElementById('btn-add-student');
+  if (addBtn) addBtn.click();
+
+  setTimeout(() => {
+    const nameField = document.getElementById('m-stu-name');
+    const phoneField = document.getElementById('m-stu-phone');
+    if (nameField) nameField.value = preReg.name;
+    if (phoneField) phoneField.value = preReg.phone;
+  }, 50);
+
+  showToast('Bilgiler öğrenci kayıt formuna aktarıldı, formu tamamlayıp kaydedin.');
 };
 
 window.setupLegacyStatusMenu = () => {
@@ -3918,22 +3987,53 @@ if (!state.studySessions) {
 // Global Filter Queries
 let attQuery = 'all';
 let attSearchTerm = '';
+let attDateStart = '';
+let attDateEnd = '';
 let hwQuery = 'all';
 let hwSearchTerm = '';
+let hwDateStart = '';
+let hwDateEnd = '';
 let studySearchTerm = '';
 let counselingSearchTerm = '';
 
 // ----------------------------------------------------
 // 1. YOKLAMA INTERACTION METHODS
 // ----------------------------------------------------
+function populateHomeworkGradeDropdown() {
+  const sel = document.getElementById('hw-grade-input');
+  if (!sel) return;
+  const grades = [...new Set(state.students.map(s => s.grade).filter(Boolean))].sort();
+  sel.innerHTML = grades.map(g => `<option value="${g}">${g}</option>`).join('');
+}
+
+/** "03.07.2026 17:25:47" formatındaki tarihi Date nesnesine çevirir */
+function parseTrDateTime(str) {
+  if (!str) return null;
+  const [datePart] = str.split(' ');
+  const [d, m, y] = datePart.split('.').map(Number);
+  if (!d || !m || !y) return null;
+  return new Date(y, m - 1, d);
+}
+
 window.renderAttendanceLogs = () => {
   const tbody = document.getElementById('attendance-log-table-body');
   if (!tbody) return;
 
+  const startDate = attDateStart ? new Date(attDateStart) : null;
+  const endDate = attDateEnd ? new Date(attDateEnd) : null;
+
   const filtered = state.attendanceLogs.filter(log => {
     const matchClass = attQuery === 'all' || log.grade === attQuery;
     const matchSearch = attSearchTerm === '' || log.student.toLowerCase().includes(attSearchTerm) || log.staff.toLowerCase().includes(attSearchTerm);
-    return matchClass && matchSearch;
+    let matchDate = true;
+    if (startDate || endDate) {
+      const logDate = parseTrDateTime(log.time);
+      if (logDate) {
+        if (startDate && logDate < startDate) matchDate = false;
+        if (endDate && logDate > endDate) matchDate = false;
+      }
+    }
+    return matchClass && matchSearch && matchDate;
   });
 
   if (filtered.length === 0) {
@@ -3968,6 +4068,101 @@ window.renderAttendanceLogs = () => {
   }).join('');
 };
 
+let takeAttendanceState = {}; // { studentId: 'Var' | 'Yok' | 'Geç' }
+
+window.openTakeAttendance = () => {
+  takeAttendanceState = {};
+  state.students.forEach(s => { takeAttendanceState[s.id] = 'Var'; });
+
+  const classFilter = document.getElementById('take-att-class-filter');
+  if (classFilter) {
+    const grades = [...new Set(state.students.map(s => s.grade).filter(Boolean))].sort();
+    classFilter.innerHTML = `<option value="all">Tüm Sınıflar</option>` +
+      grades.map(g => `<option value="${g}">${g}</option>`).join('');
+  }
+
+  window.renderTakeAttendanceList();
+  window.openLegacyModal('modal-take-attendance');
+};
+
+window.renderTakeAttendanceList = () => {
+  const container = document.getElementById('take-attendance-list');
+  const classFilter = document.getElementById('take-att-class-filter');
+  if (!container) return;
+
+  const selectedClass = classFilter ? classFilter.value : 'all';
+  const list = state.students.filter(s => s.status === 'Aktif' && (selectedClass === 'all' || s.grade === selectedClass));
+
+  if (list.length === 0) {
+    container.innerHTML = `<p style="color:var(--text-muted); font-size:12px; text-align:center; padding:14px 0;">Bu sınıfta aktif öğrenci bulunamadı.</p>`;
+    return;
+  }
+
+  const statusColors = { 'Var': '#10b981', 'Yok': '#dc2626', 'Geç': '#eab308' };
+
+  container.innerHTML = list.map(s => `
+    <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-main); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--color-border);">
+      <span style="font-size:12px; color:var(--text-main); font-weight:600;">${s.name} <span style="font-weight:400; color:var(--text-muted);">(${s.grade})</span></span>
+      <div style="display:flex; gap:4px;">
+        ${['Var', 'Geç', 'Yok'].map(status => `
+          <button type="button" onclick="window.setTakeAttendanceStatus('${s.id}', '${status}')"
+            id="take-att-btn-${s.id}-${status}"
+            style="font-size:10px; font-weight:800; padding:4px 8px; border-radius:5px; cursor:pointer; border:1px solid ${statusColors[status]};
+                   background:${takeAttendanceState[s.id] === status ? statusColors[status] : 'transparent'};
+                   color:${takeAttendanceState[s.id] === status ? '#fff' : statusColors[status]};">
+            ${status}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+};
+
+window.setTakeAttendanceStatus = (studentId, status) => {
+  takeAttendanceState[studentId] = status;
+  window.renderTakeAttendanceList();
+};
+
+window.saveTakeAttendance = () => {
+  const classFilter = document.getElementById('take-att-class-filter');
+  const selectedClass = classFilter ? classFilter.value : 'all';
+  const list = state.students.filter(s => s.status === 'Aktif' && (selectedClass === 'all' || s.grade === selectedClass));
+
+  if (list.length === 0) {
+    showToast('Kaydedilecek öğrenci bulunamadı.', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR');
+  const staffName = (window.__currentProfile && window.__currentProfile.full_name) || 'Sistem Kullanıcısı';
+
+  list.forEach(s => {
+    state.attendanceLogs.unshift({
+      student: s.name,
+      staff: staffName,
+      lesson: '—',
+      grade: s.grade,
+      status: takeAttendanceState[s.id] || 'Var',
+      time: timeStr,
+      phone: s.phone || '',
+      lessonHour: now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+    });
+  });
+
+  localStorage.setItem('edu_attendance_logs', JSON.stringify(state.attendanceLogs));
+  window.closeLegacyModal('modal-take-attendance');
+  window.renderAttendanceLogs();
+  showToast(`${list.length} öğrenci için yoklama kaydedildi.`);
+
+  if (state.smsPermissions && state.smsPermissions.attendance) {
+    const absentCount = list.filter(s => takeAttendanceState[s.id] === 'Yok').length;
+    if (absentCount > 0) {
+      showToast(`${absentCount} devamsız öğrencinin velisine bilgilendirme SMS'i kuyruğa alındı.`);
+    }
+  }
+};
+
 window.filterAttendanceByClass = () => {
   const sel = document.getElementById('att-filter-class');
   if (sel) {
@@ -3975,6 +4170,21 @@ window.filterAttendanceByClass = () => {
     window.renderAttendanceLogs();
     showToast(`Yoklama filtresi uygulandı: ${sel.value}`);
   }
+};
+
+window.filterAttendanceByDateRange = () => {
+  const startInput = document.getElementById('att-filter-start');
+  const endInput = document.getElementById('att-filter-end');
+  attDateStart = startInput ? startInput.value : '';
+  attDateEnd = endInput ? endInput.value : '';
+
+  if (!attDateStart && !attDateEnd) {
+    showToast('Lütfen en az bir tarih seçin.', 'error');
+    return;
+  }
+
+  window.renderAttendanceLogs();
+  showToast('Geçmiş yoklama kayıtları tarihe göre listelendi.');
 };
 
 window.filterAttendanceByCode = () => {
@@ -4011,11 +4221,13 @@ window.attendanceReport = (type) => {
 window.refreshAttendanceTable = () => {
   attQuery = 'all';
   attSearchTerm = '';
+  attDateStart = '';
+  attDateEnd = '';
   const searchInput = document.getElementById('attendance-log-search');
   if (searchInput) searchInput.value = '';
   const classSel = document.getElementById('att-filter-class');
   if (classSel) classSel.value = 'all';
-  
+
   window.renderAttendanceLogs();
   showToast('Yoklama kayıt tablosu yenilendi.');
 };
@@ -4044,10 +4256,21 @@ window.renderHomeworkLogs = () => {
   const tbody = document.getElementById('homework-log-table-body');
   if (!tbody) return;
 
+  const startDate = hwDateStart ? new Date(hwDateStart) : null;
+  const endDate = hwDateEnd ? new Date(hwDateEnd) : null;
+
   const filtered = state.homeworkLogs.filter(log => {
     const matchClass = hwQuery === 'all' || log.grade === hwQuery;
     const matchSearch = hwSearchTerm === '' || log.student.toLowerCase().includes(hwSearchTerm) || log.staff.toLowerCase().includes(hwSearchTerm);
-    return matchClass && matchSearch;
+    let matchDate = true;
+    if (startDate || endDate) {
+      const logDate = parseTrDateTime(log.time);
+      if (logDate) {
+        if (startDate && logDate < startDate) matchDate = false;
+        if (endDate && logDate > endDate) matchDate = false;
+      }
+    }
+    return matchClass && matchSearch && matchDate;
   });
 
   if (filtered.length === 0) {
@@ -4092,6 +4315,93 @@ window.filterHomeworkByClass = () => {
   }
 };
 
+window.filterHomeworkByDateRange = () => {
+  const startInput = document.getElementById('hw-filter-start');
+  const endInput = document.getElementById('hw-filter-end');
+  hwDateStart = startInput ? startInput.value : '';
+  hwDateEnd = endInput ? endInput.value : '';
+
+  if (!hwDateStart && !hwDateEnd) {
+    showToast('Lütfen en az bir tarih seçin.', 'error');
+    return;
+  }
+
+  window.renderHomeworkLogs();
+  showToast('Geçmiş ödev kayıtları tarihe göre listelendi.');
+};
+
+/** Yeni Ödev Ata formunun gönderimi: seçilen sınıftaki tüm aktif öğrencilere
+ *  ödev kaydı açar, SMS izinleri açıksa veli SMS kaydı ve e-posta önizleme linki oluşturur. */
+window.submitCreateHomework = (evt) => {
+  evt.preventDefault();
+
+  const title = document.getElementById('hw-title-input').value.trim();
+  const subject = document.getElementById('hw-subject-input').value;
+  const grade = document.getElementById('hw-grade-input').value;
+  const dueDate = document.getElementById('hw-date-input').value;
+  const description = document.getElementById('hw-description-input').value.trim();
+
+  if (!title || !dueDate) {
+    showToast('Lütfen ödev başlığı ve teslim tarihini girin.', 'error');
+    return;
+  }
+
+  const targetStudents = state.students.filter(s => s.status === 'Aktif' && s.grade === grade);
+  if (targetStudents.length === 0) {
+    showToast('Seçilen sınıfta aktif öğrenci bulunamadı.', 'error');
+    return;
+  }
+
+  const smsEnabled = state.smsPermissions && state.smsPermissions.homework;
+  const staffName = (window.__currentProfile && window.__currentProfile.full_name) || 'Sistem Kullanıcısı';
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR');
+  const dueDateFormatted = new Date(dueDate).toLocaleDateString('tr-TR');
+
+  targetStudents.forEach(s => {
+    state.homeworkLogs.unshift({
+      student: s.name,
+      staff: staffName,
+      grade: s.grade,
+      group: 'SEVİYE',
+      status: 'Ödev Verildi',
+      time: timeStr,
+      lesson: subject,
+      control: 'Yapılmadı',
+      controlTime: '',
+      sms: smsEnabled ? 'SMS GÖNDERİLDİ' : 'GÖNDERİLMEDİ',
+      title,
+      description,
+      dueDate: dueDateFormatted
+    });
+
+    if (smsEnabled) {
+      state.smsLogs.unshift({
+        id: `SMS-${500 + state.smsLogs.length + 1}`,
+        recipient: `${s.name} Velisi`,
+        phone: s.phone || '—',
+        message: `Sayın Velimiz, ${s.name} için "${title}" (${subject}) ödevi verilmiştir. Son teslim: ${dueDateFormatted}. - EduMercek`,
+        timestamp: timeStr,
+        status: 'İletildi'
+      });
+    }
+  });
+
+  localStorage.setItem('edu_homework_logs', JSON.stringify(state.homeworkLogs));
+  localStorage.setItem('edu_sms_logs', JSON.stringify(state.smsLogs));
+
+  document.getElementById('homework-create-form').reset();
+  window.closeLegacyModal('modal-create-homework');
+  window.renderHomeworkLogs();
+  renderSmsLogs();
+
+  showToast(
+    smsEnabled
+      ? `"${title}" ödevi ${targetStudents.length} öğrenciye atandı, velilere SMS gönderildi.`
+      : `"${title}" ödevi ${targetStudents.length} öğrenciye atandı. (SMS izinleri kapalı — Ayarlar > SMS İzinleri'nden açabilirsiniz)`
+  );
+};
+
 window.filterHomeworkByCode = () => {
   showToast('Ödev özel kod filtresi uygulandı');
 };
@@ -4126,6 +4436,8 @@ window.homeworkReport = (type) => {
 window.refreshHomeworkTable = () => {
   hwQuery = 'all';
   hwSearchTerm = '';
+  hwDateStart = '';
+  hwDateEnd = '';
   const searchInput = document.getElementById('homework-log-search');
   if (searchInput) searchInput.value = '';
   const classSel = document.getElementById('hw-filter-class');

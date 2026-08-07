@@ -45,6 +45,66 @@ create table students (
   created_at timestamptz default now()
 );
 
+-- ------------------------------------------------------------
+-- 3b. ÖN KAYITLAR (henüz öğrenciye dönüştürülmemiş başvurular)
+-- ------------------------------------------------------------
+create table pre_registrations (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  phone text,
+  parent_name text not null,
+  grade text,
+  notes text,
+  status text default 'Bekliyor',   -- Bekliyor / Tamamlandı / İptal
+  created_at timestamptz default now()
+);
+
+-- ------------------------------------------------------------
+-- 3c. PERSONEL
+-- ------------------------------------------------------------
+create table staff (
+  id text primary key,              -- ör. STF001
+  name text not null,
+  role text,
+  department text,
+  contact text,
+  status text default 'Aktif',
+  profile_id uuid references profiles(id),
+  created_at timestamptz default now()
+);
+
+-- ------------------------------------------------------------
+-- 3d. SİSTEM TANIMLARI (ders/özelkod/kurum/sms izinleri)
+-- ------------------------------------------------------------
+create table subjects (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique
+);
+
+create table custom_codes (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  short_code text not null
+);
+
+create table institution_settings (
+  id int primary key default 1,
+  name text default 'EduMercek Eğitim Kurumları',
+  address text,
+  phone text,
+  email text,
+  check (id = 1)                    -- tek satırlık ayar tablosu
+);
+
+create table sms_permissions (
+  id int primary key default 1,
+  attendance boolean default true,
+  homework boolean default true,
+  announcements boolean default true,
+  finance boolean default true,
+  check (id = 1)
+);
+
 -- Veliler (her öğrencinin 1-2 velisi olabilir)
 create table parents (
   id uuid primary key default gen_random_uuid(),
@@ -157,14 +217,6 @@ create table announcements (
   created_at timestamptz default now()
 );
 
-create table staff (
-  id text primary key,
-  name text,
-  role text,
-  phone text,
-  profile_id uuid references profiles(id)
-);
-
 create table schedule (
   id uuid primary key default gen_random_uuid(),
   day text,
@@ -204,6 +256,12 @@ alter table homework enable row level security;
 alter table studies enable row level security;
 alter table counseling_notes enable row level security;
 alter table announcements enable row level security;
+alter table pre_registrations enable row level security;
+alter table staff enable row level security;
+alter table subjects enable row level security;
+alter table custom_codes enable row level security;
+alter table institution_settings enable row level security;
+alter table sms_permissions enable row level security;
 
 -- Yardımcı fonksiyon: giriş yapan kullanıcının rolünü döner
 create or replace function auth_role() returns user_role as $$
@@ -233,3 +291,36 @@ create policy "exams_erisim" on exams
     or student_id in (select student_id from parents where profile_id = auth.uid())
     or student_id in (select id from students where owner_profile_id = auth.uid())
   );
+
+-- ------------------------------------------------------------
+-- Yönetimsel tablolar (ön kayıt, personel, ders/özelkod/kurum/sms ayarları):
+-- sadece admin ve öğretmen erişebilir, veli/öğrenci göremez.
+-- ------------------------------------------------------------
+create policy "pre_reg_admin_ogretmen" on pre_registrations
+  for all using (auth_role() in ('admin','ogretmen'))
+  with check (auth_role() in ('admin','ogretmen'));
+
+create policy "staff_admin_ogretmen_okuma" on staff
+  for select using (auth_role() in ('admin','ogretmen'));
+create policy "staff_admin_yazma" on staff
+  for insert with check (auth_role() = 'admin');
+create policy "staff_admin_guncelleme" on staff
+  for update using (auth_role() = 'admin');
+
+create policy "subjects_herkes_okur" on subjects
+  for select using (true);
+create policy "subjects_admin_yazar" on subjects
+  for all using (auth_role() = 'admin') with check (auth_role() = 'admin');
+
+create policy "custom_codes_herkes_okur" on custom_codes
+  for select using (true);
+create policy "custom_codes_admin_yazar" on custom_codes
+  for all using (auth_role() = 'admin') with check (auth_role() = 'admin');
+
+create policy "institution_herkes_okur" on institution_settings
+  for select using (true);
+create policy "institution_admin_yazar" on institution_settings
+  for all using (auth_role() = 'admin') with check (auth_role() = 'admin');
+
+create policy "sms_perm_admin_okur_yazar" on sms_permissions
+  for all using (auth_role() = 'admin') with check (auth_role() = 'admin');

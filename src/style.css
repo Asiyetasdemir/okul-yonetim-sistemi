@@ -1510,6 +1510,97 @@ table tr:last-child td {
 }
 
 /* ---------------------------------------------------- */
+/* MOBİL UYUMLULUK — inline stillerle çakışan sabit      */
+/* genişlikleri ve yatay flex düzenlerini eziyoruz       */
+/* ---------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Yoklama / Ödev / Etüt / Rehberlik gibi split-layout sayfaları */
+  .split-layout {
+    flex-direction: column !important;
+  }
+
+  .split-layout > .sidebar-panel {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .split-layout > .content-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Herhangi bir inline sabit genişlik verilmiş panel/kart mobilde tam genişlik alsın */
+  .glass-panel[style*="width: 250px"],
+  .glass-panel[style*="width:250px"] {
+    width: 100% !important;
+  }
+
+  /* Grid tabanlı bölümler tek sütuna insin */
+  .staff-grid-layout,
+  .stats-dashboard-grid,
+  .dashboard-status-bar,
+  .announcement-grid-layout,
+  .etut-layout,
+  .homework-layout {
+    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Tablolar: yatay kaydırmalı, daha küçük yazı, daha az iç boşluk */
+  table {
+    font-size: 11px !important;
+    min-width: 640px; /* içerik sıkışmasın, scroll ile görülsün */
+  }
+
+  table th,
+  table td {
+    padding: 6px 8px !important;
+    white-space: nowrap;
+  }
+
+  /* Tüm tablo sarmalayıcıları kesin yatay scroll alsın */
+  div[style*="overflow-x: auto"],
+  div[style*="overflow-x:auto"] {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Modallar mobilde ekrana tam otursun */
+  .modal-box {
+    max-width: 94vw !important;
+    width: 94vw !important;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+
+  .modal-overlay {
+    padding: 8px !important;
+  }
+
+  /* Durum çubuğu (Genel Tanımlamalar / Sistem Ayarları / vb.) butonları alt alta sığsın */
+  .dashboard-status-bar {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .status-left {
+    flex-wrap: wrap !important;
+    width: 100%;
+  }
+
+  .status-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* Form satırları (yan yana iki input) mobilde alt alta */
+  div[style*="display: flex"][style*="gap: 12px"] > div[style*="flex: 1"] {
+    min-width: 100%;
+  }
+}
+
+
+/* ---------------------------------------------------- */
 /* PRINT STYLES FOR RECEIPT (PRINT PREVIEW LOCK) */
 /* ---------------------------------------------------- */
 @media print {

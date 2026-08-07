@@ -556,6 +556,9 @@
                     <input type="date" id="att-filter-start" value="2026-07-03" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
                     <label style="font-size: 10px; color: var(--text-muted);">Bitiş Tarihi</label>
                     <input type="date" id="att-filter-end" value="2026-07-03" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <button class="btn btn-secondary btn-block" onclick="window.filterAttendanceByDateRange()" style="font-size: 11px; padding: 8px; width: 100%; margin-top: 4px;">
+                      <i data-lucide="history" style="width:12px;height:12px;"></i> Geçmiş Yoklamaları Getir
+                    </button>
                   </div>
                 </div>
 
@@ -593,6 +596,7 @@
               <div class="content-panel glass-panel" style="flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
                   <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="window.openTakeAttendance()" style="font-size: 11px; padding: 6px 12px; background: var(--color-students); border: none; color: #fff; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="clipboard-check" style="width:12px; height:12px;"></i> Bugün İçin Yoklama Al</button>
                     <button class="btn btn-secondary" onclick="window.attendanceReport('detailed')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="bar-chart-3" style="width:12px; height:12px; color: #10b981;"></i> Detaylı Yoklama Raporu</button>
                     <button class="btn btn-secondary" onclick="window.attendanceReport('staff')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="user-check" style="width:12px; height:12px; color: #3b82f6;"></i> Detaylı Personel Raporu</button>
                     <button class="btn btn-secondary" onclick="window.refreshAttendanceTable()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="refresh-cw" style="width:12px; height:12px;"></i> Sayfayı Yenile</button>
@@ -944,6 +948,9 @@
                     <input type="date" id="hw-filter-start" value="2025-10-18" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
                     <label style="font-size: 10px; color: var(--text-muted);">Bitiş Tarihi</label>
                     <input type="date" id="hw-filter-end" value="2025-10-18" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                    <button class="btn btn-secondary btn-block" onclick="window.filterHomeworkByDateRange()" style="font-size: 11px; padding: 8px; width: 100%; margin-top: 4px;">
+                      <i data-lucide="history" style="width:12px;height:12px;"></i> Geçmiş Ödevleri Getir
+                    </button>
                   </div>
                 </div>
 
@@ -1808,8 +1815,30 @@
       </div>
 
       <!-- 1. PRE-REGISTRATION MODAL -->
+      <div class="modal-overlay" id="modal-take-attendance">
+        <div class="modal-box" style="max-width: 560px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar); max-height: 88vh; overflow-y: auto;">
+          <div class="modal-header">
+            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="clipboard-check" style="color: var(--color-students);"></i> Bugün İçin Yoklama Al</h3>
+            <button class="modal-close" onclick="window.closeLegacyModal('modal-take-attendance')">&times;</button>
+          </div>
+          <div style="padding: 20px;">
+            <div style="display:flex; gap:8px; margin-bottom:14px; align-items:center;">
+              <label style="font-size:11px; color:var(--text-muted); white-space:nowrap;">Sınıf Filtrele:</label>
+              <select id="take-att-class-filter" onchange="window.renderTakeAttendanceList()" style="flex:1; padding: 6px 10px; font-size: 12px; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                <option value="all">Tüm Sınıflar</option>
+              </select>
+            </div>
+            <div id="take-attendance-list" style="display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; margin-bottom:14px;"></div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button type="button" class="btn btn-secondary" onclick="window.closeLegacyModal('modal-take-attendance')" style="padding: 6px 12px; font-size: 11px;">Vazgeç</button>
+              <button type="button" class="btn btn-primary" onclick="window.saveTakeAttendance()" style="padding: 6px 12px; font-size: 11px; background: var(--color-students); border: none; color: #fff;">Yoklamayı Kaydet</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-overlay" id="modal-pre-reg">
-        <div class="modal-box" style="max-width: 500px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar);">
+        <div class="modal-box" style="max-width: 560px; width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); background: var(--bg-sidebar); max-height: 88vh; overflow-y: auto;">
           <div class="modal-header" style="background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(251, 146, 60, 0.1));">
             <h3 style="display: flex; align-items: center; gap: 8px; color: #f97316;"><i data-lucide="user-plus"></i> Ön Kayıt İşlemleri</h3>
             <button class="modal-close" onclick="window.closeLegacyModal('modal-pre-reg')">&times;</button>
@@ -1848,6 +1877,11 @@
                 <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: #f97316; border: none; color: #fff;">Başvuruyu Kaydet</button>
               </div>
             </form>
+
+            <div style="border-top: 1px solid var(--color-border); margin-top: 18px; padding-top: 14px;">
+              <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Kayıtlı Ön Başvurular</h4>
+              <div id="pre-reg-list-container" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;"></div>
+            </div>
           </div>
         </div>
       </div>
