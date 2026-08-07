@@ -566,9 +566,7 @@
                   <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Sınıf ve Tarih Bazında</h4>
                   <select id="att-filter-class" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; margin-bottom: 8px;">
                     <option value="all">Tüm Sınıflar</option>
-                    <option value="27 YAZ 11A">27 YAZ 11A</option>
-                    <option value="27 YAZ 11B">27 YAZ 11B</option>
-                    <option value="27 YAZ 11C">27 YAZ 11C</option>
+                    <!-- Sınıf listesi öğrenci verisinden otomatik doldurulur -->
                   </select>
                   <button class="btn btn-secondary btn-block" onclick="window.filterAttendanceByClass()" style="font-size: 11px; padding: 8px; width: 100%;">Sınıfa Göre Getir</button>
                 </div>
@@ -595,16 +593,20 @@
               <!-- Right Area: Actions & Grid Table -->
               <div class="content-panel glass-panel" style="flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="window.openTakeAttendance()" style="font-size: 11px; padding: 6px 12px; background: var(--color-students); border: none; color: #fff; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="clipboard-check" style="width:12px; height:12px;"></i> Bugün İçin Yoklama Al</button>
-                    <button class="btn btn-secondary" onclick="window.attendanceReport('detailed')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="bar-chart-3" style="width:12px; height:12px; color: #10b981;"></i> Detaylı Yoklama Raporu</button>
-                    <button class="btn btn-secondary" onclick="window.attendanceReport('staff')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="user-check" style="width:12px; height:12px; color: #3b82f6;"></i> Detaylı Personel Raporu</button>
-                    <button class="btn btn-secondary" onclick="window.refreshAttendanceTable()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="refresh-cw" style="width:12px; height:12px;"></i> Sayfayı Yenile</button>
-                  </div>
-                  <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                    <button class="btn btn-secondary" onclick="window.attendanceReport('sms')" style="font-size: 11px; padding: 6px 12px; color: var(--color-students); display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="mail" style="width:12px; height:12px;"></i> Manuel SMS</button>
-                    <button class="btn btn-secondary" onclick="window.exportAttendanceToExcel()" style="font-size: 11px; padding: 6px 12px; color: #10b981; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-spreadsheet" style="width:12px; height:12px;"></i> Excel'e Aktar</button>
-                    <button class="btn btn-primary" onclick="window.openEditSelectedAttendance()" style="font-size: 11px; padding: 6px 12px; background: #10b981; border: none; color:#fff;">Seçilenleri Düzenle</button>
+                  <button class="btn btn-primary" onclick="window.openTakeAttendance()" style="font-size: 13px; padding: 10px 18px; background: var(--color-students); border: none; color: #fff; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;"><i data-lucide="clipboard-check" style="width:15px; height:15px;"></i> Bugün İçin Yoklama Al</button>
+
+                  <div class="dropup-container" style="position: relative;">
+                    <button class="btn btn-secondary" onclick="window.toggleAttToolsMenu()" style="font-size: 12px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                      <i data-lucide="more-horizontal" style="width:14px; height:14px;"></i> Diğer İşlemler
+                    </button>
+                    <div id="att-tools-menu" style="display:none; position:absolute; right:0; top:calc(100% + 6px); background:var(--bg-sidebar); border:1px solid var(--color-border); border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); min-width:220px; z-index:50; overflow:hidden;">
+                      <a href="javascript:void(0)" onclick="window.attendanceReport('detailed'); window.toggleAttToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="bar-chart-3" style="width:13px;height:13px; color:#10b981;"></i> Detaylı Yoklama Raporu</a>
+                      <a href="javascript:void(0)" onclick="window.attendanceReport('staff'); window.toggleAttToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="user-check" style="width:13px;height:13px; color:#3b82f6;"></i> Detaylı Personel Raporu</a>
+                      <a href="javascript:void(0)" onclick="window.attendanceReport('sms'); window.toggleAttToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="mail" style="width:13px;height:13px; color:var(--color-students);"></i> Manuel SMS</a>
+                      <a href="javascript:void(0)" onclick="window.exportAttendanceToExcel(); window.toggleAttToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="file-spreadsheet" style="width:13px;height:13px; color:#10b981;"></i> Excel'e Aktar</a>
+                      <a href="javascript:void(0)" onclick="window.openEditSelectedAttendance(); window.toggleAttToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="pencil" style="width:13px;height:13px;"></i> Seçilenleri Düzenle</a>
+                      <a href="javascript:void(0)" onclick="window.refreshAttendanceTable(); window.toggleAttToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none; border-top:1px solid var(--color-border);"><i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Sayfayı Yenile</a>
+                    </div>
                   </div>
                 </div>
 
@@ -958,9 +960,7 @@
                   <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 800;">Sınıf ve Tarih Bazında</h4>
                   <select id="hw-filter-class" style="width: 100%; padding: 8px; font-size: 12px; box-sizing: border-box; background: var(--bg-main); border: 1px solid var(--color-border); color: var(--text-main); border-radius: var(--radius-sm); outline: none; margin-bottom: 8px;">
                     <option value="all">Tüm Sınıflar</option>
-                    <option value="10-A (K)">10-A (K)</option>
-                    <option value="27 YAZ 115">27 YAZ 115</option>
-                    <option value="ÇIKARTILANLAR">ÇIKARTILANLAR</option>
+                    <!-- Sınıf listesi öğrenci verisinden otomatik doldurulur -->
                   </select>
                   <button class="btn btn-secondary btn-block" onclick="window.filterHomeworkByClass()" style="font-size: 11px; padding: 8px; width: 100%;">Sınıfa Göre Getir</button>
                 </div>
@@ -986,15 +986,19 @@
               <!-- Right Area: Actions & Grid Table -->
               <div class="content-panel glass-panel" style="flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button class="btn btn-secondary" onclick="window.homeworkReport('detailed')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="bar-chart-3" style="width:12px; height:12px; color: #10b981;"></i> Detaylı Ödev Raporu</button>
-                    <button class="btn btn-secondary" onclick="window.homeworkReport('staff')" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="user-check" style="width:12px; height:12px; color: #3b82f6;"></i> Haftalık Ödev Vermeyenler</button>
-                    <button class="btn btn-secondary" onclick="window.refreshHomeworkTable()" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="refresh-cw" style="width:12px; height:12px;"></i> Sayfayı Yenile</button>
-                  </div>
-                  <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                    <button class="btn btn-secondary" onclick="window.openLegacyModal('modal-create-homework')" style="font-size: 11px; padding: 6px 12px; color: var(--color-counseling); display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-plus-2" style="width:12px; height:12px;"></i> Yeni Ödev Ata</button>
-                    <button class="btn btn-secondary" onclick="window.exportHomeworkToExcel()" style="font-size: 11px; padding: 6px 12px; color: #10b981; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="file-spreadsheet" style="width:12px; height:12px;"></i> Excel'e Aktar</button>
-                    <button class="btn btn-primary" onclick="window.openEditSelectedHomework()" style="font-size: 11px; padding: 6px 12px; background: #3b82f6; border: none; color:#fff;">Seçilenleri Güncelle</button>
+                  <button class="btn btn-primary" onclick="window.openLegacyModal('modal-create-homework')" style="font-size: 13px; padding: 10px 18px; background: var(--color-counseling); border: none; color: #fff; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;"><i data-lucide="file-plus-2" style="width:15px; height:15px;"></i> Yeni Ödev Ata</button>
+
+                  <div class="dropup-container" style="position: relative;">
+                    <button class="btn btn-secondary" onclick="window.toggleHwToolsMenu()" style="font-size: 12px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;">
+                      <i data-lucide="more-horizontal" style="width:14px; height:14px;"></i> Diğer İşlemler
+                    </button>
+                    <div id="hw-tools-menu" style="display:none; position:absolute; right:0; top:calc(100% + 6px); background:var(--bg-sidebar); border:1px solid var(--color-border); border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); min-width:220px; z-index:50; overflow:hidden;">
+                      <a href="javascript:void(0)" onclick="window.homeworkReport('detailed'); window.toggleHwToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="bar-chart-3" style="width:13px;height:13px; color:#10b981;"></i> Detaylı Ödev Raporu</a>
+                      <a href="javascript:void(0)" onclick="window.homeworkReport('staff'); window.toggleHwToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="user-check" style="width:13px;height:13px; color:#3b82f6;"></i> Haftalık Ödev Vermeyenler</a>
+                      <a href="javascript:void(0)" onclick="window.exportHomeworkToExcel(); window.toggleHwToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="file-spreadsheet" style="width:13px;height:13px; color:#10b981;"></i> Excel'e Aktar</a>
+                      <a href="javascript:void(0)" onclick="window.openEditSelectedHomework(); window.toggleHwToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none;"><i data-lucide="pencil" style="width:13px;height:13px;"></i> Seçilenleri Güncelle</a>
+                      <a href="javascript:void(0)" onclick="window.refreshHomeworkTable(); window.toggleHwToolsMenu()" style="display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; color:var(--text-main); text-decoration:none; border-top:1px solid var(--color-border);"><i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Sayfayı Yenile</a>
+                    </div>
                   </div>
                 </div>
 

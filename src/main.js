@@ -2386,6 +2386,25 @@ function populateFormSelects() {
 
   // Populate category dropdown
   populateCategoryDropdowns();
+
+  // Yoklama / Ödev sol panel sınıf filtreleri — gerçek öğrenci sınıflarından
+  const realGrades = [...new Set(state.students.map(s => s.grade).filter(Boolean))].sort();
+
+  const attClassFilter = document.getElementById('att-filter-class');
+  if (attClassFilter) {
+    const current = attClassFilter.value;
+    attClassFilter.innerHTML = `<option value="all">Tüm Sınıflar</option>` +
+      realGrades.map(g => `<option value="${g}">${g}</option>`).join('');
+    if (realGrades.includes(current)) attClassFilter.value = current;
+  }
+
+  const hwClassFilter = document.getElementById('hw-filter-class');
+  if (hwClassFilter) {
+    const current = hwClassFilter.value;
+    hwClassFilter.innerHTML = `<option value="all">Tüm Sınıflar</option>` +
+      realGrades.map(g => `<option value="${g}">${g}</option>`).join('');
+    if (realGrades.includes(current)) hwClassFilter.value = current;
+  }
 }
 
 // ----------------------------------------------------
@@ -3932,56 +3951,78 @@ window.saveStudentSettings = (e) => {
 
 // ----------------------------------------------------
 // LEGACY OPTIMIZED VIEWS STATE & DATA SEEDING
+// (Önce localStorage'daki GERÇEK kayıtlar okunur; hiç kayıt yoksa
+//  yalnızca ilk seferde örnek/demo veri gösterilir.)
 // ----------------------------------------------------
-if (!state.attendanceLogs) {
-  state.attendanceLogs = [
-    { student: 'MERYEM ASEL KAYIŞ', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5065148974', lessonHour: '17.10-17.50' },
-    { student: 'ELA SULTAN TÜRK', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5412010552', lessonHour: '17.10-17.50' },
-    { student: 'SILA İYİDOĞAN', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5059489749', lessonHour: '17.10-17.50' },
-    { student: 'EKREM URAS ÜZER', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5374414137', lessonHour: '17.10-17.50' },
-    { student: 'DORUK BAYDUR', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5057739727', lessonHour: '17.10-17.50' },
-    { student: 'ADA SU ÇİÇEK', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5326132913', lessonHour: '17.10-17.50' },
-    { student: 'YAĞMUR CEVİZ', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Var', time: '03.07.2026 17:25:47', phone: '5354486725', lessonHour: '17.10-17.50' },
-    { student: 'YAKUP EMİR SOYSAL', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Var', time: '03.07.2026 17:25:47', phone: '5551766254', lessonHour: '17.10-17.50' },
-    { student: 'DENİZ KIR', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Yok', time: '03.07.2026 17:17:10', phone: '5323759317', lessonHour: '17.10-17.50' },
-    { student: 'ARDA KAYRA AKYÜREKLİ', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Yok', time: '03.07.2026 17:17:10', phone: '5538867477', lessonHour: '17.10-17.50' },
-    { student: 'ALKIN EYMEN TOMARZA', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Yok', time: '03.07.2026 17:17:10', phone: '5011020118', lessonHour: '17.10-17.50' },
-    { student: 'ÖZÜM ELA DADAŞINLIOĞLU', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Var', time: '03.07.2026 17:17:10', phone: '5353004988', lessonHour: '17.10-17.50' },
-    { student: 'MELİSA GÜLER', staff: 'DİRENÇ KAPLAN', lesson: 'BİYOLOJİ', grade: '27 YAZ 11B', status: 'Yok', time: '03.07.2026 17:15:54', phone: '5366328741', lessonHour: '17.10-17.50' },
-    { student: 'DORUK GÜNEYTEPE', staff: 'DİRENÇ KAPLAN', lesson: 'BİYOLOJİ', grade: '27 YAZ 11B', status: 'Yok', time: '03.07.2026 17:15:54', phone: '5534912010', lessonHour: '17.10-17.50' }
-  ];
-  localStorage.setItem('edu_attendance_logs', JSON.stringify(state.attendanceLogs));
+{
+  const savedAttendance = localStorage.getItem('edu_attendance_logs');
+  if (savedAttendance) {
+    state.attendanceLogs = JSON.parse(savedAttendance);
+  } else if (!state.attendanceLogs) {
+    state.attendanceLogs = [
+      { student: 'MERYEM ASEL KAYIŞ', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5065148974', lessonHour: '17.10-17.50' },
+      { student: 'ELA SULTAN TÜRK', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5412010552', lessonHour: '17.10-17.50' },
+      { student: 'SILA İYİDOĞAN', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5059489749', lessonHour: '17.10-17.50' },
+      { student: 'EKREM URAS ÜZER', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5374414137', lessonHour: '17.10-17.50' },
+      { student: 'DORUK BAYDUR', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5057739727', lessonHour: '17.10-17.50' },
+      { student: 'ADA SU ÇİÇEK', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Yok', time: '03.07.2026 17:25:47', phone: '5326132913', lessonHour: '17.10-17.50' },
+      { student: 'YAĞMUR CEVİZ', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Var', time: '03.07.2026 17:25:47', phone: '5354486725', lessonHour: '17.10-17.50' },
+      { student: 'YAKUP EMİR SOYSAL', staff: 'GÜLFER DAĞDELEN', lesson: 'KİMYA', grade: '27 YAZ 11A', status: 'Var', time: '03.07.2026 17:25:47', phone: '5551766254', lessonHour: '17.10-17.50' },
+      { student: 'DENİZ KIR', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Yok', time: '03.07.2026 17:17:10', phone: '5323759317', lessonHour: '17.10-17.50' },
+      { student: 'ARDA KAYRA AKYÜREKLİ', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Yok', time: '03.07.2026 17:17:10', phone: '5538867477', lessonHour: '17.10-17.50' },
+      { student: 'ALKIN EYMEN TOMARZA', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Yok', time: '03.07.2026 17:17:10', phone: '5011020118', lessonHour: '17.10-17.50' },
+      { student: 'ÖZÜM ELA DADAŞINLIOĞLU', staff: 'EMİNE YÜKSEL', lesson: 'MATEMATİK', grade: '27 YAZ 11C', status: 'Var', time: '03.07.2026 17:17:10', phone: '5353004988', lessonHour: '17.10-17.50' },
+      { student: 'MELİSA GÜLER', staff: 'DİRENÇ KAPLAN', lesson: 'BİYOLOJİ', grade: '27 YAZ 11B', status: 'Yok', time: '03.07.2026 17:15:54', phone: '5366328741', lessonHour: '17.10-17.50' },
+      { student: 'DORUK GÜNEYTEPE', staff: 'DİRENÇ KAPLAN', lesson: 'BİYOLOJİ', grade: '27 YAZ 11B', status: 'Yok', time: '03.07.2026 17:15:54', phone: '5534912010', lessonHour: '17.10-17.50' }
+    ];
+    localStorage.setItem('edu_attendance_logs', JSON.stringify(state.attendanceLogs));
+  }
 }
 
-if (!state.homeworkLogs) {
-  state.homeworkLogs = [
-    { student: 'SEREN GÖL', staff: 'EMİNE YÜKSEL', grade: '27 YAZ 115', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' },
-    { student: 'İLKİM ÖYKÜ ÖRS', staff: 'EMİNE YÜKSEL', grade: '10-A (K)', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapıldı', controlTime: '19.10.2025 10:00', sms: 'SMS GÖNDERİLDİ' },
-    { student: 'BİLGE ŞAHİN', staff: 'EMİNE YÜKSEL', grade: 'ÇIKARTILANLAR', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' },
-    { student: 'ZEYNEP ALTUN', staff: 'EMİNE YÜKSEL', grade: '10-A (K)', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' },
-    { student: 'KEREM İLİKSU', staff: 'EMİNE YÜKSEL', grade: '27 YAZ 115', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' }
-  ];
-  localStorage.setItem('edu_homework_logs', JSON.stringify(state.homeworkLogs));
+{
+  const savedHomework = localStorage.getItem('edu_homework_logs');
+  if (savedHomework) {
+    state.homeworkLogs = JSON.parse(savedHomework);
+  } else if (!state.homeworkLogs) {
+    state.homeworkLogs = [
+      { student: 'SEREN GÖL', staff: 'EMİNE YÜKSEL', grade: '27 YAZ 115', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' },
+      { student: 'İLKİM ÖYKÜ ÖRS', staff: 'EMİNE YÜKSEL', grade: '10-A (K)', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapıldı', controlTime: '19.10.2025 10:00', sms: 'SMS GÖNDERİLDİ' },
+      { student: 'BİLGE ŞAHİN', staff: 'EMİNE YÜKSEL', grade: 'ÇIKARTILANLAR', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' },
+      { student: 'ZEYNEP ALTUN', staff: 'EMİNE YÜKSEL', grade: '10-A (K)', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' },
+      { student: 'KEREM İLİKSU', staff: 'EMİNE YÜKSEL', grade: '27 YAZ 115', group: 'SEVİYE', status: 'Ödev Verildi', time: '18.10.2025 13:24:27', lesson: 'MATEMATİK', control: 'Yapılmadı', controlTime: '', sms: 'SMS GÖNDERİLDİ' }
+    ];
+    localStorage.setItem('edu_homework_logs', JSON.stringify(state.homeworkLogs));
+  }
 }
 
-if (!state.counselingLogs) {
-  state.counselingLogs = [
-    { student: 'YAĞIZ AKSOY', grade: '12-C', parent1: 'KADİR AKSOY', parent2: 'BETÜL KAMİLOĞLU', count: 3, absentCount: 748, hwCount: 0, etutCount: 0 },
-    { student: 'HADEL TAHA ALKASE', grade: '12-B', parent1: 'SAMER TAHA ALKASE', parent2: '', count: 1, absentCount: 685, hwCount: 0, etutCount: 0 },
-    { student: 'IRMAK MELEKOĞLU', grade: '12-C', parent1: 'ZERÇEM MELEKOĞLU', parent2: '', count: 4, absentCount: 680, hwCount: 0, etutCount: 0 },
-    { student: 'ALMAA FİTTAH', grade: '12-B', parent1: 'MUHAMMED FİTTAH', parent2: '', count: 2, absentCount: 642, hwCount: 0, etutCount: 0 },
-    { student: 'EYLÜL YILMAZ', grade: '12D-12E', parent1: 'CEYLAN YILMAZ', parent2: '', count: 1, absentCount: 616, hwCount: 0, etutCount: 1 },
-    { student: 'CEYLİN OLMAZ', grade: '12-A', parent1: 'GÜLTEN OLMAZ', parent2: '', count: 5, absentCount: 599, hwCount: 0, etutCount: 1 },
-    { student: 'EGE KÖKSAL', grade: '12-B', parent1: 'SEVCAN KÖKSAL', parent2: '', count: 2, absentCount: 574, hwCount: 0, etutCount: 5 }
-  ];
-  localStorage.setItem('edu_counseling_logs', JSON.stringify(state.counselingLogs));
+{
+  const savedCounseling = localStorage.getItem('edu_counseling_logs');
+  if (savedCounseling) {
+    state.counselingLogs = JSON.parse(savedCounseling);
+  } else if (!state.counselingLogs) {
+    state.counselingLogs = [
+      { student: 'YAĞIZ AKSOY', grade: '12-C', parent1: 'KADİR AKSOY', parent2: 'BETÜL KAMİLOĞLU', count: 3, absentCount: 748, hwCount: 0, etutCount: 0 },
+      { student: 'HADEL TAHA ALKASE', grade: '12-B', parent1: 'SAMER TAHA ALKASE', parent2: '', count: 1, absentCount: 685, hwCount: 0, etutCount: 0 },
+      { student: 'IRMAK MELEKOĞLU', grade: '12-C', parent1: 'ZERÇEM MELEKOĞLU', parent2: '', count: 4, absentCount: 680, hwCount: 0, etutCount: 0 },
+      { student: 'ALMAA FİTTAH', grade: '12-B', parent1: 'MUHAMMED FİTTAH', parent2: '', count: 2, absentCount: 642, hwCount: 0, etutCount: 0 },
+      { student: 'EYLÜL YILMAZ', grade: '12D-12E', parent1: 'CEYLAN YILMAZ', parent2: '', count: 1, absentCount: 616, hwCount: 0, etutCount: 1 },
+      { student: 'CEYLİN OLMAZ', grade: '12-A', parent1: 'GÜLTEN OLMAZ', parent2: '', count: 5, absentCount: 599, hwCount: 0, etutCount: 1 },
+      { student: 'EGE KÖKSAL', grade: '12-B', parent1: 'SEVCAN KÖKSAL', parent2: '', count: 2, absentCount: 574, hwCount: 0, etutCount: 5 }
+    ];
+    localStorage.setItem('edu_counseling_logs', JSON.stringify(state.counselingLogs));
+  }
 }
 
-if (!state.studySessions) {
-  state.studySessions = [
-    { teacher: 'DİRENÇ KAPLAN', student: 'İLKER YILMAZ', date: '2026-07-10', time: '10:00 - 10:40', subject: 'BİYOLOJİ', topic: '1.ÜNİTE TEKRAR' }
-  ];
-  localStorage.setItem('edu_study_sessions', JSON.stringify(state.studySessions));
+{
+  const savedStudySessions = localStorage.getItem('edu_study_sessions');
+  if (savedStudySessions) {
+    state.studySessions = JSON.parse(savedStudySessions);
+  } else if (!state.studySessions) {
+    state.studySessions = [
+      { teacher: 'DİRENÇ KAPLAN', student: 'İLKER YILMAZ', date: '2026-07-10', time: '10:00 - 10:40', subject: 'BİYOLOJİ', topic: '1.ÜNİTE TEKRAR' }
+    ];
+    localStorage.setItem('edu_study_sessions', JSON.stringify(state.studySessions));
+  }
 }
 
 // Global Filter Queries
@@ -4067,6 +4108,22 @@ window.renderAttendanceLogs = () => {
     `;
   }).join('');
 };
+
+window.toggleAttToolsMenu = () => {
+  const menu = document.getElementById('att-tools-menu');
+  if (!menu) return;
+  const isOpen = menu.style.display === 'block';
+  menu.style.display = isOpen ? 'none' : 'block';
+};
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('att-tools-menu');
+  if (!menu || menu.style.display !== 'block') return;
+  const isToggleBtn = e.target.closest('button')?.getAttribute('onclick') === 'window.toggleAttToolsMenu()';
+  if (!menu.contains(e.target) && !isToggleBtn) {
+    menu.style.display = 'none';
+  }
+});
 
 let takeAttendanceState = {}; // { studentId: 'Var' | 'Yok' | 'Geç' }
 
@@ -4305,6 +4362,22 @@ window.renderHomeworkLogs = () => {
   }).join('');
   if (window.lucide) window.lucide.createIcons();
 };
+
+window.toggleHwToolsMenu = () => {
+  const menu = document.getElementById('hw-tools-menu');
+  if (!menu) return;
+  const isOpen = menu.style.display === 'block';
+  menu.style.display = isOpen ? 'none' : 'block';
+};
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('hw-tools-menu');
+  if (!menu || menu.style.display !== 'block') return;
+  const isToggleBtn = e.target.closest('button')?.getAttribute('onclick') === 'window.toggleHwToolsMenu()';
+  if (!menu.contains(e.target) && !isToggleBtn) {
+    menu.style.display = 'none';
+  }
+});
 
 window.filterHomeworkByClass = () => {
   const sel = document.getElementById('hw-filter-class');
